@@ -1,0 +1,560 @@
+{% extends "/shared/base.html" %}
+{% block content %}
+<style>
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="leaf" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23leaf)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #2E7D32;
+            margin-bottom: 60px;
+            font-weight: 600;
+        }
+
+        .story-section {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .story-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .story-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .mission-vision {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin: 60px 0;
+        }
+
+        .mission-card, .vision-card {
+            background: linear-gradient(135deg, #E8F5E8, #F1F8E9);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 3px solid #4CAF50;
+            transition: all 0.3s ease;
+        }
+
+        .mission-card:hover, .vision-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.3);
+        }
+
+        .mission-card h3, .vision-card h3 {
+            font-size: 1.8rem;
+            color: #2E7D32;
+            margin-bottom: 20px;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .value-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-top: 4px solid #4CAF50;
+        }
+
+        .value-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .value-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        .value-card h4 {
+            font-size: 1.3rem;
+            color: #2E7D32;
+            margin-bottom: 15px;
+        }
+
+        .team-section {
+            background: linear-gradient(135deg, #F1F8E9, #E8F5E8);
+            padding: 80px 0;
+            margin: 60px 0;
+            border-radius: 30px;
+        }
+
+        .stats-section {
+            background: #2E7D32;
+            color: white;
+            padding: 80px 0;
+            margin: 60px 0;
+            border-radius: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #81C784;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            border-radius: 20px;
+            margin: 60px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #4CAF50;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: #f0f0f0;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .benefit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header p {
+                font-size: 1.1rem;
+            }
+
+            .story-section {
+                padding: 30px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .mission-vision {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1 class="fade-in">About SokoFresh</h1>
+            <p class="fade-in" style="animation-delay: 0.2s;">Connecting Communities Through Fresh, Local Produce</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="section">
+            <div class="story-section fade-in" style="animation-delay: 0.4s;">
+                <h2 class="section-title">Our Story</h2>
+                <div class="story-text">
+                    <p>SokoFresh was born from a simple yet powerful vision: to bridge the gap between local farmers and communities seeking fresh, quality produce. Founded in the heart of Kenya, we recognized that while farmers were growing exceptional fruits and vegetables, consumers often struggled to access truly fresh, locally-sourced produce.</p>
+                    
+                    <p>Our name "SokoFresh" combines the Swahili word "Soko" (meaning market) with "Fresh," representing our commitment to creating a vibrant marketplace where freshness meets convenience. We believe that everyone deserves access to nutritious, farm-fresh produce while supporting the hardworking farmers who make it all possible.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="mission-vision">
+                <div class="mission-card fade-in" style="animation-delay: 0.6s;">
+                    <h3>🎯 Our Mission</h3>
+                    <p>To revolutionize the fresh produce supply chain by creating a seamless digital marketplace that connects local farmers directly with consumers, ensuring fair prices for farmers and fresh, quality produce for families.</p>
+                </div>
+                
+                <div class="vision-card fade-in" style="animation-delay: 0.8s;">
+                    <h3>🌟 Our Vision</h3>
+                    <p>To become the leading platform for farm-to-table commerce in East Africa, fostering sustainable agriculture and healthy communities through technology and innovation.</p>
+                </div>
+            </div>
+        </section>
+
+        {% if 'farmer' in user.roles %}
+            <section class="section">
+                <h2 class="section-title">Our Core Values</h2>
+                <div class="values-grid">
+                    <div class="value-card fade-in" style="animation-delay: 1s;">
+                        <div class="value-icon">🌱</div>
+                        <h4>Sustainability</h4>
+                        <p>We promote sustainable farming practices and reduce food waste through efficient supply chain management.</p>
+                    </div>
+                    
+                    <div class="value-card fade-in" style="animation-delay: 1.2s;">
+                        <div class="value-icon">🤝</div>
+                        <h4>Fair Trade</h4>
+                        <p>We ensure farmers receive fair compensation for their hard work while offering competitive prices to consumers.</p>
+                    </div>
+                    
+                    <div class="value-card fade-in" style="animation-delay: 1.4s;">
+                        <div class="value-icon">✨</div>
+                        <h4>Quality</h4>
+                        <p>We maintain the highest standards for freshness and quality from farm to your doorstep.</p>
+                    </div>
+                    
+                    <div class="value-card fade-in" style="animation-delay: 1.6s;">
+                        <div class="value-icon">🏘️</div>
+                        <h4>Community</h4>
+                        <p>We strengthen local communities by supporting small-scale farmers and promoting local agriculture.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="stats-section">
+                <div class="container">
+                    <h2 class="section-title" style="color: white; margin-bottom: 50px;">Our Impact</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item fade-in" style="animation-delay: 1.8s;">
+                            <h3>500+</h3>
+                            <p>Local Farmers Supported</p>
+                        </div>
+                        <div class="stat-item fade-in" style="animation-delay: 2s;">
+                            <h3>10,000+</h3>
+                            <p>Happy Customers</p>
+                        </div>
+                        <div class="stat-item fade-in" style="animation-delay: 2.2s;">
+                            <h3>50+</h3>
+                            <p>Types of Fresh Produce</p>
+                        </div>
+                        <div class="stat-item fade-in" style="animation-delay: 2.4s;">
+                            <h3>24/7</h3>
+                            <p>Platform Availability</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-section">
+                <div class="container">
+                    <h2 class="section-title">Why Choose SokoFresh?</h2>
+                    <div class="story-text">
+                        <p><strong>Direct from Farm:</strong> We eliminate middlemen, ensuring you get the freshest produce while farmers receive better prices for their crops.</p>
+                        
+                        <p><strong>Technology-Driven:</strong> Our platform uses smart logistics and real-time tracking to maintain the cold chain and ensure optimal freshness.</p>
+                        
+                        <p><strong>Community Impact:</strong> Every purchase supports local farmers and contributes to sustainable agricultural practices in our communities.</p>
+                        
+                        <p><strong>Convenience:</strong> Order fresh produce from the comfort of your home and have it delivered right to your doorstep.</p>
+                    </div>
+                </div>
+            </div>
+        {% elif 'buyer' in user.roles and not 'farmer' in user.roles %}
+            <section class="section">
+                <h2 class="section-title">What We Promise You</h2>
+                <div class="values-grid">
+                    <div class="value-card fade-in" style="animation-delay: 1s;">
+                        <div class="value-icon">🥬</div>
+                        <h4>Maximum Freshness</h4>
+                        <p>Harvested within 24-48 hours of delivery, ensuring you get produce at its peak freshness and nutritional value.</p>
+                    </div>
+                    
+                    <div class="value-card fade-in" style="animation-delay: 1.2s;">
+                        <div class="value-icon">⚡</div>
+                        <h4>Convenience</h4>
+                        <p>Order from home, office, or anywhere. We deliver fresh produce to your doorstep on your schedule.</p>
+                    </div>
+                    
+                    <div class="value-card fade-in" style="animation-delay: 1.4s;">
+                        <div class="value-icon">💰</div>
+                        <h4>Fair Prices</h4>
+                        <p>By connecting you directly with farmers, we eliminate middleman markups and pass the savings on to you.</p>
+                    </div>
+                    
+                    <div class="value-card fade-in" style="animation-delay: 1.6s;">
+                        <div class="value-icon">🌱</div>
+                        <h4>Local Support</h4>
+                        <p>Every purchase supports local farmers and sustainable agriculture practices in your community.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Why Choose SokoFresh?</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-card fade-in" style="animation-delay: 1.8s;">
+                        <div class="benefit-icon">🚚</div>
+                        <h4>Fast Delivery</h4>
+                        <p>Same-day or next-day delivery options available. Your fresh produce arrives when you need it.</p>
+                    </div>
+                    
+                    <div class="benefit-card fade-in" style="animation-delay: 2s;">
+                        <div class="benefit-icon">📱</div>
+                        <h4>Easy Ordering</h4>
+                        <p>User-friendly platform with simple browsing, secure payment, and order tracking features.</p>
+                    </div>
+                    
+                    <div class="benefit-card fade-in" style="animation-delay: 2.2s;">
+                        <div class="benefit-icon">🥕</div>
+                        <h4>Quality Guarantee</h4>
+                        <p>Not satisfied with your produce? We offer hassle-free returns and replacements.</p>
+                    </div>
+                    
+                    <div class="benefit-card fade-in" style="animation-delay: 2.4s;">
+                        <div class="benefit-icon">🌟</div>
+                        <h4>Variety</h4>
+                        <p>Wide selection of seasonal fruits, vegetables, and herbs from multiple local farms.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="stats-section">
+                <div class="container">
+                    <h2 class="section-title" style="color: white; margin-bottom: 50px;">Our Growing Community</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item fade-in" style="animation-delay: 2.6s;">
+                            <h3>10,000+</h3>
+                            <p>Happy Customers</p>
+                        </div>
+                        <div class="stat-item fade-in" style="animation-delay: 2.8s;">
+                            <h3>50+</h3>
+                            <p>Fresh Produce Varieties</p>
+                        </div>
+                        <div class="stat-item fade-in" style="animation-delay: 3s;">
+                            <h3>98%</h3>
+                            <p>Customer Satisfaction</p>
+                        </div>
+                        <div class="stat-item fade-in" style="animation-delay: 3.2s;">
+                            <h3>24/7</h3>
+                            <p>Online Ordering</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-section">
+                <div class="container">
+                    <h2 class="section-title">How It Works</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-card fade-in" style="animation-delay: 3.4s;">
+                            <div class="benefit-icon">1️⃣</div>
+                            <h4>Browse & Select</h4>
+                            <p>Browse our wide selection of fresh produce from local farms and add items to your cart.</p>
+                        </div>
+                        
+                        <div class="benefit-card fade-in" style="animation-delay: 3.6s;">
+                            <div class="benefit-icon">2️⃣</div>
+                            <h4>Choose Delivery</h4>
+                            <p>Select your preferred delivery time and location. We offer flexible scheduling options.</p>
+                        </div>
+                        
+                        <div class="benefit-card fade-in" style="animation-delay: 3.8s;">
+                            <div class="benefit-icon">3️⃣</div>
+                            <h4>Fresh Delivery</h4>
+                            <p>Receive your fresh produce at your doorstep, carefully packed and ready to enjoy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <section class="section">
+                <h2 class="section-title">Why Join Us</h2>
+                <div class="values-grid">
+                    <div class="value-card fade-in" style="animation-delay: 1s;">
+                        <div class="value-icon">🥬</div>
+                        <h4>Fresh From Farm</h4>
+                        <p>Get produce harvested within 24–48 hours — packed with freshness and nutrients.</p>
+                    </div>
+
+                    <div class="value-card fade-in" style="animation-delay: 1.2s;">
+                        <div class="value-icon">⚡</div>
+                        <h4>Easy & Flexible</h4>
+                        <p>Order from anywhere, anytime. We deliver fresh produce to your door on your terms.</p>
+                    </div>
+
+                    <div class="value-card fade-in" style="animation-delay: 1.4s;">
+                        <div class="value-icon">💰</div>
+                        <h4>Affordable Pricing</h4>
+                        <p>We cut out the middleman so you enjoy farm-fresh quality at fair, direct prices.</p>
+                    </div>
+
+                    <div class="value-card fade-in" style="animation-delay: 1.6s;">
+                        <div class="value-icon">🌱</div>
+                        <h4>Support Local Farmers</h4>
+                        <p>Every order you place strengthens local agriculture and community sustainability.</p>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+        {% if not user.is_authenticated%}
+            <div class="cta-section">
+                <div class="container">
+                    <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Join the Fresh Revolution</h2>
+                    <p style="font-size: 1.2rem; margin-bottom: 30px;">Experience the difference of truly fresh, locally-sourced produce</p>
+                    <a href="/marketplace" class="cta-button">Start Shopping Fresh</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Add scroll-triggered animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+
+        // Add some interactive hover effects
+        document.querySelectorAll('.value-card, .mission-card, .vision-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+{% endblock %}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>SokoFresh - Fresh from your farm to your table</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/users_home.css')}}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='images/favicon.ico')}}">
+</head>
+<body>
+	<nav class="navbar-bp">
+        <div class="navbar-container upper-div">
+            <div class="logo-container">
+                <img src="{{url_for('static', filename='images/logo1.png')}}">
+                <a href="#" class="logo-name">SokoFresh</a>
+            </div>
+            
+            <div class="live-orders">
+                <i class="fa fa-bolt flash-icon"></i> 
+                <span class="order-text">0 orders placed in the last hour</span>
+            </div>            
+            
+            <div class="contact-info">
+                <div class="phone-info">
+                    <span class="phone-icon"><i class="fa fa-phone"></i></span>
+                    <div>
+                        <div style="font-size: 14px;">Online Shopping</div>
+                        <div class="phone-number">+254740448956</div>
+                    </div>
+                </div>
+                <div class="notification-icon">
+                    <button><i class="fa fa-bell"></i></button>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="account-dropdown">
+                    <div class="account-trigger">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture }}" alt="Profile Pic" class="profile-pic">
+                            <div class="dropdown-item">Hi, {{ user.name.split(' ')[-1] }}</div>
+                        {% else %}
+                            <img id="profilePicPreview" src="{{ user.profile_pic_url or url_for('static', filename='images/default.jpg') }}" alt="Preview" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+                            <div class="dropdown-item">Hi, {{ user.name.split(' ')[-1] }}</div>
+                        {% endif %}
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item">Hi, {{ user.name }}</div>
+                            <a href="{{ url_for('buyers.settings') }}" class="dropdown-item"><i class="fa fa-cog" style="margin-right: .3rem;"></i>Settings</a>
+                            {% if 'farmer' in user.roles and 'buyer' in user.roles %}
+                            <a href="#" class="dropdown-item"><i class="fa fa-refresh" style="margin-right: .3rem;"></i>Switch Role</a>
+                        {% endif %}
+                            <a href="{{ url_for('auth.logout') }}" class="dropdown-item"><i class="fa fa-sign-out" style="margin-right: .3rem;"></i>Logout</a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <a href="/login" class="account-info">
+                    <span class="user-icon"><i class="fa fa-user"></i></span>
+                    <div>
+                        <div>Account</div>
+                        <div style="font-size: 16px;">Login/Register</div>
+                    </div>
+                </a>
+                {% endif %}
+
+                <button class="cart-btn" onclick="toggleCart()">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                    <span style="font-size: 16px;">Ksh 0.00</span>
+                </button>
+
+                <div id="cartPanel" class="cart-panel">
+                    <h5>Your Cart</h5>
+                    <div id="cartItems"></div>
+
+                    <div class="cart-summary">
+                        <strong>Total:</strong> <span id="cartTotal">Ksh 0.00</span>
+                    </div>
+
+                    <!-- Optional checkout button (disabled for unauthenticated users) -->
+                    <button id="checkoutBtn" class="btn btn-primary mt-3" onclick="checkoutCart()">
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar-container lower-div">
+            <div class="navbar-items">
+                <ul class="nav-links">
+                    {% set is_farmer = 'farmer' in user.roles %}
+                    {% set is_buyer = 'buyer' in user.roles %}
+
+                    <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+
+                    {% if not user.is_authenticated or (is_buyer and not is_farmer) %}
+                        <li class="nav-item"><a href="/marketplace" class="nav-link">Marketplace</a></li>
+                    {% endif %}
+
+                    {% if is_buyer and not is_farmer %}
+                        <li class="nav-item"><a href="/my-orders" class="nav-link">My Orders</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Order History</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Saved Products</a></li>
+                    {% endif %}
+
+                    {% if is_farmer %}
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="farmerDropdown" role="button">
+                                Farmer Dashboard
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="farmerDropdown">
+                                <li><a class="dropdown-item" href="/farmer/dashboard">Dashboard Overview</a></li>
+                                <li><a class="dropdown-item" href="/farmer/post-product">Post Product</a></li>
+                                <li><a class="dropdown-item" href="/farmer/listings">My Listings</a></li>
+                                <li><a class="dropdown-item" href="/farmer/orders">Orders Received</a></li>
+                                <li><a class="dropdown-item" href="#">Inventory Management</a></li>
+                                <li><a class="dropdown-item" href="/farmer/sales-report">Sales Report</a></li>
+                                <li><a class="dropdown-item" href="#">Payouts</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item"><a href="/support" class="nav-link">Support</a></li>
+                    <li class="nav-item"><a href="/about-us" class="nav-link">About Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="modal"></div>
+
+    <section>
+        {% block content %}
+        {% endblock %}
+    </section>
+
+    <!-- Stats/Features Section -->
+    <div class="row mt-5 pt-5" style="background: #204e20;">
+        <div class="col-12">
+            <div class="row text-center text-white">
+                <div class="col-md-4 mb-4">
+                    <div class="mb-3"><i class="fa fa-check-circle"></i></div>
+                    <h5 class="fw-bold">Quality Guaranteed</h5>
+                    <p class="text-white-75 small">Fresh from local farms</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="mb-3"><i class="fa fa-envelope"></i></div>
+                    <h5 class="fw-bold">Fast Delivery</h5>
+                    <p class="text-white-75 small">Same day delivery available</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="mb-3"><i class="fa fa-signal"></i></div>
+                    <h5 class="fw-bold">Best Prices</h5>
+                    <p class="text-white-75 small">Direct from farmers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="navbar-helpers">
+            <button id="openChatBtn"><i class="fa fa-comments"></i></button>
+        </div>
+    {% endif %}
+
+    <div class="scroll-to-top-popup">
+        <button id="scrollToTopBtn">↑</button>
+    </div>
+
+    <div id="chatBox" class="chatbox hidden">
+        <div class="chatbox-header">
+            <span>Chat</span>
+            <button id="closeChatBtn">&times;</button>
+        </div>
+        <div class="chatbox-body">
+            <p>Hi there 👋! How can we help?</p>
+            <div style="margin-top: 10px; padding: 8px; background-color: #f0f0f0; border-radius: 5px; font-size: 12px; color: #666;">
+                This is a demo chat widget. It will be implemented soon. Stay in touch.
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Cropper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Chart -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <!-- My JS files -->
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

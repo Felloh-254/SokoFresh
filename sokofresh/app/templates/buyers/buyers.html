@@ -1,0 +1,257 @@
+{% extends "shared/base.html" %}
+{% block content%}
+
+<section class="welcome-section">
+        <div class="welcome-container">
+            <!-- Background layers -->
+            <div class="bg-layer active" data-bg="{{url_for('static', filename='/images/vegetables.jpg')}}"></div>
+            <div class="bg-layer" data-bg="{{url_for('static', filename='/images/tomatoes.jpeg')}}"></div>
+            <div class="bg-layer" data-bg="{{url_for('static', filename='/images/butcher.jpg')}}"></div>
+            <div class="bg-layer" data-bg="{{url_for('static', filename='/images/pexels-ryan-baker-35851-129574.jpg')}}"></div>
+            
+            <!-- Overlay -->
+            <div class="bg-overlay"></div>
+            
+            <!-- Content -->
+            <div class="content-overlay">
+                <h1 class="welcome-title">Welcome to Our Store</h1>
+                <p class="welcome-subtitle">Discover amazing products with incredible deals</p>
+            </div>
+            
+            <!-- Navigation arrows -->
+            <button class="nav-arrow prev" onclick="prevSlide()"><i class="fa fa-angle-left"></i></button>
+            <button class="nav-arrow next" onclick="nextSlide()"><i class="fa fa-angle-right"></i></button>
+            
+            <!-- Controls -->
+            <div class="slide-controls">
+                <button class="control-btn">Shop with us</button>
+            </div>
+            
+            <!-- Indicators -->
+            <div class="slide-indicators">
+                <div class="indicator active" onclick="goToSlide(0)"></div>
+                <div class="indicator" onclick="goToSlide(1)"></div>
+                <div class="indicator" onclick="goToSlide(2)"></div>
+                <div class="indicator" onclick="goToSlide(3)"></div>
+            </div>
+        </div>
+        
+        <div class="welcome-message">Free shipping on all orders above Ksh 5000<span style="color: blue; margin-left: .3rem;">#StaySafe</span></div>
+    </section>
+
+    <section class="products">
+        <div class="intro-container">
+
+            <!-- STRENGTHS -->
+            <div class="strengths">
+
+                <!-- Top Rank Farms -->
+                <div class="rank strength">
+                    <i class="fa fa-star-o"></i>
+                    <h3>Top Rank Farms</h3>
+                    <p>Our marketplace features only the most reliable and consistent farms based on buyer reviews, delivery speed, and product quality.</p>
+                </div>
+
+                <!-- Organic Certified -->
+                <div class="certification strength">
+                    <i class="fa fa-check-circle"></i>
+                    <h3>Organic Certified</h3>
+                    <p>We prioritize farms that grow without harmful chemicals or GMOs. Every certified farm meets strict organic and ethical farming standards.</p>
+                </div>
+
+                <!-- Fast Delivery -->
+                <div class="delivery strength">
+                    <i class="fa fa-bolt"></i>
+                    <h3>Fast Delivery</h3>
+                    <p>Our logistics network ensures products get from farm to fork fast — without compromising freshness, even for perishable goods.</p>
+                </div>
+
+                <!-- Trusted Products -->
+                <div class="trust strength">
+                    <i class="fa fa-check"></i><i class="fa fa-check" style="margin-left:-5px;"></i>
+                    <h3>Trusted Products</h3>
+                    <p>Every product is reviewed, rated, and traceable. No random sellers — just verified, local producers with a reputation to protect.</p>
+                </div>
+
+            </div>
+
+            <!-- DIVERSITY BOXES -->
+            <div class="diversity">
+                <div class="box fruit">
+                    <div class="box-description">
+                        <p>Fruit Deals – Up to 30% Off</p>
+                        <p>New</p>
+                    </div>
+                    <div class="sub-description">
+                        <p>Get the freshest mangos, bananas, oranges and more — handpicked and delivered to you.</p>
+                    </div>
+                </div>
+
+                <div class="box vegetables">
+                    <div class="box-description">
+                        <p>Fresh Farm Veggies Daily</p>
+                        <p>Locally grown. Carefully packed.</p>
+                    </div>
+                    <button>Shop Now</button>
+                </div>
+
+                <div class="box milk">
+                    <div class="box-description">
+                        <p>100% Organic Milk</p>
+                        <p>Straight from pasture-fed cows</p>
+                    </div>
+                    <button>Shop Now</button>
+                </div>
+
+                <div class="box meat">
+                    <div class="box-description">
+                        <p>Meat & Poultry — Up to 50% Off</p>
+                        <p>From trusted butchers & farms</p>
+                    </div>
+                    <button>Shop Now</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+<script>
+	const bgLayers = document.querySelectorAll('.bg-layer');
+    const indicators = document.querySelectorAll('.indicator');
+    let currentSlide = 0;
+    let isAutoSliding = true;
+    let autoSlideInterval;
+
+    // Initialize backgrounds
+    function initBackgrounds() {
+        bgLayers.forEach((layer, index) => {
+            const bgUrl = layer.dataset.bg;
+            layer.style.backgroundImage = `url('${bgUrl}')`;
+        });
+    }
+
+    // Show specific slide with smooth transition
+    function showSlide(index, direction = 'next') {
+        // Remove active classes
+        bgLayers.forEach(layer => {
+            layer.classList.remove('active', 'prev');
+        });
+        indicators.forEach(indicator => {
+            indicator.classList.remove('active');
+        });
+
+        // Add previous state to current slide
+        if (bgLayers[currentSlide]) {
+            bgLayers[currentSlide].classList.add('prev');
+        }
+
+        // Update current slide
+        currentSlide = index;
+
+        // Activate new slide with animation
+        setTimeout(() => {
+            bgLayers[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
+        }, 50);
+
+        // Clean up previous state
+        setTimeout(() => {
+            bgLayers.forEach(layer => {
+                if (!layer.classList.contains('active')) {
+                    layer.classList.remove('prev');
+                }
+            });
+        }, 1200);
+    }
+
+    // Navigation functions
+    function nextSlide() {
+        const nextIndex = (currentSlide + 1) % bgLayers.length;
+        showSlide(nextIndex, 'next');
+    }
+
+    function prevSlide() {
+        const prevIndex = (currentSlide - 1 + bgLayers.length) % bgLayers.length;
+        showSlide(prevIndex, 'prev');
+    }
+
+    function goToSlide(index) {
+        if (index !== currentSlide) {
+            showSlide(index);
+        }
+    }
+
+    // Auto slide functionality
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(nextSlide, 5000);
+    }
+
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+
+    function toggleAutoSlide() {
+        const btn = event.target;
+        if (isAutoSliding) {
+            stopAutoSlide();
+            btn.textContent = 'Auto: OFF';
+            isAutoSliding = false;
+        } else {
+            startAutoSlide();
+            btn.textContent = 'Auto: ON';
+            isAutoSliding = true;
+        }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            prevSlide();
+        } else if (e.key === 'ArrowRight') {
+            nextSlide();
+        }
+    });
+
+    // Touch/swipe support for mobile
+    let startX = 0;
+    let endX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+        endX = e.changedTouches[0].clientX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const diff = startX - endX;
+        const threshold = 50;
+
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0) {
+                nextSlide(); // Swipe left - next slide
+            } else {
+                prevSlide(); // Swipe right - previous slide
+            }
+        }
+    }
+
+    // Pause auto-slide on hover
+    const welcomeSection = document.querySelector('.welcome-section');
+    welcomeSection.addEventListener('mouseenter', () => {
+        if (isAutoSliding) stopAutoSlide();
+    });
+
+    welcomeSection.addEventListener('mouseleave', () => {
+        if (isAutoSliding) startAutoSlide();
+    });
+
+    // Initialize everything
+    initBackgrounds();
+    if (isAutoSliding) startAutoSlide();
+</script>
+
+
+{% endblock %}

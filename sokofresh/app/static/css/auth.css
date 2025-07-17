@@ -1,0 +1,209 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+
+body.modal-open {
+    padding-right: 0 !important;
+}
+
+
+.login-section {
+    background: #fff;
+    min-height: 100vh;
+    padding-top: 7%;
+}
+
+
+.signup-section {
+    background: #fff;
+    min-height: 100vh;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.login-form,
+.signup-form {
+    background: #f1f4f7;
+    width: 40%;
+    margin-left: 30%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 1px 0 32px 20px rgba(0, 0, 0, 0.2);
+}
+
+.login-header,
+.signup-header {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.login-header img,
+.signup-header img {
+    height: 40px;
+    width: 40px;
+}
+
+.login-header h1,
+.signup-header h1 {
+    text-decoration: none;
+    font-size: 25px;
+    font-weight: bold;
+    color: #0d0e0e;
+    text-shadow: -5px 4px 12px;
+    font-family: cursive;
+    text-transform: none;
+    align-self: center;
+    margin-left: .3rem;
+    margin-bottom: 0;
+}
+
+.login-body,
+.signup-body {
+    display: flex;
+    flex-flow: column;
+    font-family: Tahoma;
+}
+
+.login-body label:first-child,
+.signup-body label:first-child {
+    margin-top: .5rem;
+}
+
+.login-body label,
+.signup-body label {
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: capitalize;
+    margin: .3rem 1rem 0 1rem;
+}
+
+.login-body input,
+.signup-body input {
+    padding: 10px 40px 10px 10px;
+    border: 2px solid #e9ecef;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    margin: 0 1rem;
+}
+
+.login-body input:focus,
+.signup-body input:focus {
+    border-color: #28a745;
+}
+
+.login-button,
+.signup-button {
+    margin: 1rem;
+    text-align: center;
+}
+
+.login-button button,
+.signup-button button {
+    font-size: 20px;
+    font-weight: normal;
+    font-family: Tahoma;
+    text-transform: capitalize;
+    color: #000000;
+    padding: .6rem 4rem;
+    border-radius: 5px;
+    border: 1px solid #28a745;
+    background: #28a745;
+}
+
+.login-button button:hover,
+.signup-button button:hover {
+    background: #ffffff;
+    transition: .2s;
+    border: 1px solid #28a745;
+}
+
+.login-switch,
+.signup-switch {
+    padding-bottom: 2rem;
+    text-align: center;
+}
+
+.login-switch a,
+.signup-switch a {
+    text-decoration: none;
+    color: #000000;
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 1rem;
+}
+
+.login-switch a:hover,
+.signup-switch a:hover {
+    color: blue;
+    transition: .2s;
+}
+
+.login-options,
+.signup-options {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    color: #555;
+    padding: 10px 15px;
+    font-weight: 500;
+    font-family: Roboto, sans-serif;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    width: fit-content;
+}
+
+.google-btn:hover {
+    background-color: #f7f7f7;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.google-btn img {
+    height: 20px;
+    width: 20px;
+    margin-right: 10px;
+}
+
+.google-btn span {
+    font-size: 14px;
+}
+
+.add-product-button {
+  background: linear-gradient(135deg, #FF7F50, #FF5722); /* coral to deep orange */
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+  transition: all 0.3s ease;
+}
+
+.add-product-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 87, 34, 0.6);
+}

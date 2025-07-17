@@ -1,0 +1,377 @@
+{% extends "shared/base.html" %}
+{% block content %}
+    <div class="order-container">
+        <!-- Order Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Active Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">Ksh 24,750</div>
+                <div class="stat-label">Total Spent</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">95%</div>
+                <div class="stat-label">Satisfaction Rate</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Order Status</label>
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <select id="dateFilter">
+                        <option value="">All Time</option>
+                        <option value="7">Last 7 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 3 Months</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Search Orders</label>
+                    <input type="text" placeholder="Order ID or product name..." id="searchInput">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders List -->
+        <div class="orders-container" id="ordersContainer">
+            <!-- Order 1 - Delivered -->
+            <div class="order-card" data-status="delivered">
+                <div class="order-header">
+                    <div class="order-info">
+                        <div class="order-id">Order #SF-2025-001</div>
+                        <div class="order-date">Placed on June 28, 2025</div>
+                    </div>
+                    <div class="order-status status-delivered">Delivered</div>
+                </div>
+                <div class="order-body">
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-image">🥑</div>
+                            <div class="item-details">
+                                <div class="item-name">Hass Avocados</div>
+                                <div class="item-quantity">2 kg</div>
+                            </div>
+                            <div class="item-price">Ksh 300</div>
+                        </div>
+                        <div class="order-item">
+                            <div class="item-image">🥬</div>
+                            <div class="item-details">
+                                <div class="item-name">Sukuma Wiki</div>
+                                <div class="item-quantity">3 bunches</div>
+                            </div>
+                            <div class="item-price">Ksh 150</div>
+                        </div>
+                        <div class="order-item">
+                            <div class="item-image">🍅</div>
+                            <div class="item-details">
+                                <div class="item-name">Fresh Tomatoes</div>
+                                <div class="item-quantity">1.5 kg</div>
+                            </div>
+                            <div class="item-price">Ksh 225</div>
+                        </div>
+                    </div>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span>Ksh 675</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee:</span>
+                            <span>Ksh 100</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total:</span>
+                            <span>Ksh 775</span>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-small btn-reorder" onclick="reorderItems('SF-2025-001')">Reorder</button>
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="downloadReceipt('SF-2025-001')">Receipt</button>
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="rateOrder('SF-2025-001')">Rate Order</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order 2 - Processing with Tracking -->
+            <div class="order-card" data-status="processing">
+                <div class="order-header">
+                    <div class="order-info">
+                        <div class="order-id">Order #SF-2025-002</div>
+                        <div class="order-date">Placed on June 29, 2025</div>
+                    </div>
+                    <div class="order-status status-processing">Processing</div>
+                </div>
+                <div class="order-body">
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-image">🍌</div>
+                            <div class="item-details">
+                                <div class="item-name">Sweet Bananas</div>
+                                <div class="item-quantity">2 bunches</div>
+                            </div>
+                            <div class="item-price">Ksh 200</div>
+                        </div>
+                        <div class="order-item">
+                            <div class="item-image">🌿</div>
+                            <div class="item-details">
+                                <div class="item-name">Fresh Spinach</div>
+                                <div class="item-quantity">2 bunches</div>
+                            </div>
+                            <div class="item-price">Ksh 120</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-progress">
+                        <h4 style="margin-bottom: 15px; color: #2E7D32;">Order Tracking</h4>
+                        <div class="progress-steps">
+                            <div class="progress-line">
+                                <div class="progress-line-active"></div>
+                            </div>
+                            <div class="progress-step completed">1</div>
+                            <div class="progress-step completed">2</div>
+                            <div class="progress-step active">3</div>
+                            <div class="progress-step">4</div>
+                            <div class="progress-step">5</div>
+                        </div>
+                        <div class="step-labels">
+                            <div class="step-label">Order Placed</div>
+                            <div class="step-label">Confirmed</div>
+                            <div class="step-label active">Processing</div>
+                            <div class="step-label">Shipped</div>
+                            <div class="step-label">Delivered</div>
+                        </div>
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span>Ksh 320</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee:</span>
+                            <span>Ksh 100</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total:</span>
+                            <span>Ksh 420</span>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-small btn-track" onclick="trackOrder('SF-2025-002')">Track Order</button>
+                        <button class="btn btn-small btn-cancel" onclick="cancelOrder('SF-2025-002')">Cancel Order</button>
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="contactSupport('SF-2025-002')">Contact Support</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order 3 - Pending -->
+            <div class="order-card" data-status="pending">
+                <div class="order-header">
+                    <div class="order-info">
+                        <div class="order-id">Order #SF-2025-003</div>
+                        <div class="order-date">Placed on June 29, 2025</div>
+                    </div>
+                    <div class="order-status status-pending">Pending</div>
+                </div>
+                <div class="order-body">
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-image">🥕</div>
+                            <div class="item-details">
+                                <div class="item-name">Fresh Carrots</div>
+                                <div class="item-quantity">1 kg</div>
+                            </div>
+                            <div class="item-price">Ksh 120</div>
+                        </div>
+                        <div class="order-item">
+                            <div class="item-image">🧅</div>
+                            <div class="item-details">
+                                <div class="item-name">Red Onions</div>
+                                <div class="item-quantity">0.5 kg</div>
+                            </div>
+                            <div class="item-price">Ksh 80</div>
+                        </div>
+                    </div>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span>Ksh 200</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee:</span>
+                            <span>Ksh 100</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total:</span>
+                            <span>Ksh 300</span>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="editOrder('SF-2025-003')">Edit Order</button>
+                        <button class="btn btn-small btn-cancel" onclick="cancelOrder('SF-2025-003')">Cancel Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">📦</div>
+            <h3>No orders found</h3>
+            <p>You haven't placed any orders yet or no orders match your current filters.</p>
+            <button class="btn" onclick="window.location.href='/marketplace'">Start Shopping</button>
+        </div>
+    </div>
+
+    <!-- Modal for Order Details -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter functionality
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            
+            const orderCards = document.querySelectorAll('.order-card');
+            let visibleOrders = 0;
+            
+            orderCards.forEach(card => {
+                let showCard = true;
+                
+                // Status filter
+                if (statusFilter && !card.dataset.status.includes(statusFilter)) {
+                    showCard = false;
+                }
+                
+                // Search filter
+                if (searchInput) {
+                    const orderText = card.textContent.toLowerCase();
+                    if (!orderText.includes(searchInput)) {
+                        showCard = false;
+                    }
+                }
+                
+                if (showCard) {
+                    card.style.display = 'block';
+                    visibleOrders++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show empty state if no orders match
+            const emptyState = document.getElementById('emptyState');
+            if (visibleOrders === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        // Order actions
+        function trackOrder(orderId) {
+            showModal(`
+                <h2>Track Order ${orderId}</h2>
+                <div class="tracking-progress">
+                    <p><strong>Estimated Delivery:</strong> June 30, 2025 (Tomorrow)</p>
+                    <p><strong>Delivery Address:</strong> Kiambu Road, Nairobi</p>
+                    <p><strong>Driver:</strong> John Kamau (+254712345678)</p>
+                    <div style="margin-top: 20px;">
+                        <button class="btn">Call Driver</button>
+                        <button class="btn order-btn-secondary btn-secondary" style="margin-left: 10px;">Update Address</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function reorderItems(orderId) {
+            alert(`Reordering items from ${orderId}. Redirecting to cart...`);
+            // In a real app, this would add items to cart
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm(`Are you sure you want to cancel order ${orderId}?`)) {
+                alert(`Order ${orderId} has been cancelled. You will receive a full refund within 3-5 business days.`);
+                // In a real app, this would update the order status
+            }
+        }
+
+        function downloadReceipt(orderId) {
+            alert(`Downloading receipt for order ${orderId}...`);
+            // In a real app, this would download a PDF receipt
+        }
+
+        function rateOrder(orderId) {
+            showModal(`
+                <h2>Rate Your Order</h2>
+                <p>How was your experience with order ${orderId}?</p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="font-size: 2rem; margin-bottom: 15px;">
+                        <span onclick="setRating(1)" style="cursor: pointer;">⭐</span>
+                        <span onclick="setRating(2)" style="cursor: pointer;">⭐</span>
+                        <span onclick="setRating(3)" style="cursor: pointer;">⭐</span>
+                        <span onclick="setRating(4)" style="cursor: pointer;">⭐</span>
+                        <span onclick="setRating(5)" style="cursor: pointer;">⭐</span>
+                    </div>
+                    <textarea placeholder="Tell us about your experience..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;" rows="4"></textarea>
+                    <button class="btn">Submit Review</button>
+                </div>
+            `);
+        }
+
+        function editOrder(orderId) {
+            alert(`Editing order ${orderId}. Redirecting to edit page...`);
+            // In a real app, this would redirect to an edit form
+        }
+
+        function contactSupport(orderId) {
+            showModal(`
+                <h2>Contact Support</h2>
+                <p>Need help with order ${orderId}?</p>
+                <div style="margin: 20px 0;">
+                    <div style="margin-bottom: 15px;">
+                        <strong>📞 Phone Support:</strong><br>
+                        +254740448956 (24/7)
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>📧 Email Support:</strong><br>
+                        support@sokofresh.com
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>💬 Live Chat:</strong><br>
+                        <button`)
+    </script>
+
+
+{% endblock %}

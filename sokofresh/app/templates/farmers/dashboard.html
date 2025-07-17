@@ -1,0 +1,386 @@
+{% extends "/shared/base.html" %}
+{% block content %}
+<div class="dash-container-fluid px-4 py-4">
+    
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-black fw-bold mb-1">Happy to see you today {{ user.name }}!</h2>
+                </div>
+                <div>
+                    <a href="/post-product" class="btn btn-lg text-white fw-semibold shadow-lg post-product-dash-btn">
+                        <i class="fa fa-plus me-2" style="margin-right: .3rem;"></i>Add New Product
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-lg h-100" 
+                 style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease;"
+                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.15)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, #2e6e1f 0%, #4ca68a 100%);">
+                            <i class="fa fa-leaf text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-1">47</h3>
+                    <p class="text-muted mb-0">Active Products</p>
+                    <small class="text-success"><i class="fa fa-arrow-up me-1"></i>+12% this month</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-lg h-100" 
+                 style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease;"
+                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.15)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, #e6732c 0%, #d1581f 100%);">
+                            <i class="fa fa-shopping-cart text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-1">234</h3>
+                    <p class="text-muted mb-0">Total Orders</p>
+                    <small class="text-success"><i class="fa fa-arrow-up me-1"></i>+23% this week</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-lg h-100" 
+                 style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease;"
+                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.15)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);">
+                            <i class="fa fa-coins text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-1">KES 87,240</h3>
+                    <p class="text-muted mb-0">Monthly Revenue</p>
+                    <small class="text-success"><i class="fa fa-arrow-up me-1"></i>+18% vs last month</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-lg h-100" 
+                 style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease;"
+                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.15)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, #8b5a2b 0%, #cd853f 100%);">
+                            <i class="fa fa-star text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-1">4.8</h3>
+                    <p class="text-muted mb-0">Average Rating</p>
+                    <small class="text-warning"><i class="fa fa-star me-1"></i>156 reviews</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-12">
+            <h4 class="text-white fw-bold mb-4">Quick Actions</h4>
+        </div>
+        
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <a href="/farmer/listings" class="text-decoration-none">
+                <div class="card border-0 shadow-lg h-100 action-card" 
+                     style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease; cursor: pointer;"
+                     onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 25px 50px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                                     style="width: 60px; height: 60px; background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);">
+                                    <i class="fa fa-list text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1">My Products</h5>
+                                <p class="text-muted small mb-0">View and manage your listings</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">47 Active</span>
+                            <i class="fa fa-arrow-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <a href="/farmer/orders" class="text-decoration-none">
+                <div class="card border-0 shadow-lg h-100 action-card" 
+                     style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease; cursor: pointer;"
+                     onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 25px 50px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                                     style="width: 60px; height: 60px; background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);">
+                                    <i class="fa fa-clipboard-list text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1">Orders</h5>
+                                <p class="text-muted small mb-0">Track customer orders</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">12 Pending</span>
+                            <i class="fa fa-arrow-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <a href="/farmer/sales-report" class="text-decoration-none">
+                <div class="card border-0 shadow-lg h-100 action-card" 
+                     style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease; cursor: pointer;"
+                     onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 25px 50px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                                     style="width: 60px; height: 60px; background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);">
+                                    <i class="fa fa-chart-bar text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1">Analytics</h5>
+                                <p class="text-muted small mb-0">View sales performance</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">+23% Growth</span>
+                            <i class="fa fa-arrow-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <a href="#" class="text-decoration-none">
+                <div class="card border-0 shadow-lg h-100 action-card" 
+                     style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease; cursor: pointer;"
+                     onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 25px 50px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                                     style="width: 60px; height: 60px; background: linear-gradient(135deg, #8b5a2b 0%, #cd853f 100%);">
+                                    <i class="fa fa-user-friends text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1">Customers</h5>
+                                <p class="text-muted small mb-0">Manage customer relationships</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">89 Active</span>
+                            <i class="fa fa-arrow-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <a href="#" class="text-decoration-none">
+                <div class="card border-0 shadow-lg h-100 action-card" 
+                     style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease; cursor: pointer;"
+                     onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 25px 50px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                                     style="width: 60px; height: 60px; background: linear-gradient(135deg, #2d5016 0%, #7cb342 100%);">
+                                    <i class="fa fa-warehouse text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1">Inventory</h5>
+                                <p class="text-muted small mb-0">Track stock levels</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">23 Items</span>
+                            <i class="fa fa-arrow-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <a href="#" class="text-decoration-none">
+                <div class="card border-0 shadow-lg h-100 action-card" 
+                     style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease; cursor: pointer;"
+                     onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 25px 50px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                                     style="width: 60px; height: 60px; background: linear-gradient(135deg, #4a7c59 0%, #6ba368 100%);">
+                                    <i class="fa fa-truck text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1">Deliveries</h5>
+                                <p class="text-muted small mb-0">Track shipments</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">5 In Transit</span>
+                            <i class="fa fa-arrow-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <a href="#" class="text-decoration-none">
+                <div class="card border-0 shadow-lg h-100 action-card" 
+                     style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; transition: all 0.3s ease; cursor: pointer;"
+                     onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 25px 50px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                                     style="width: 60px; height: 60px; background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">
+                                    <i class="fa fa-cog text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1">Settings</h5>
+                                <p class="text-muted small mb-0">Account & preferences</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-dark bg-opacity-10 text-dark px-3 py-2 rounded-pill">Profile</span>
+                            <i class="fa fa-arrow-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg" 
+                 style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold text-dark mb-0">Recent Activity</h5>
+                        <a href="#" class="btn btn-outline-primary btn-sm px-3 py-2" style="border-radius: 12px;">View All</a>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(40, 167, 69, 0.1);">
+                                <div class="me-3">
+                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success" 
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fa fa-check text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 text-dark">Order Completed</h6>
+                                    <p class="text-muted small mb-0">Fresh tomatoes delivered to customer</p>
+                                    <small class="text-muted">2 hours ago</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(255, 193, 7, 0.1);">
+                                <div class="me-3">
+                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning" 
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fa fa-clock text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 text-dark">New Order Received</h6>
+                                    <p class="text-muted small mb-0">Order for organic carrots - KES 2,400</p>
+                                    <small class="text-muted">4 hours ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.action-card:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+}
+
+.card, .btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .dash-container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .display-4 {
+        font-size: 2rem !important;
+    }
+}
+</style>
+{% endblock %}

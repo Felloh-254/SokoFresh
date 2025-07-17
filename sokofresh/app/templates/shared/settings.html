@@ -1,0 +1,308 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Account Settings</h2>
+    
+    <div class="card p-4 shadow">
+        <div class="row">
+            <div class="col-md-3 text-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture }}" class="img-fluid rounded-circle mb-3" alt="Profile Picture" width="180">
+                {% else %}
+                    <img id="profilePicPreview" src="{{ user.profile_pic_url or url_for('static', filename='images/default.jpg') }}" class="img-fluid rounded-circle mb-3" alt="Profile Picture" width="120">
+                {% endif %}
+                <button class="st-update-profile btn btn-secondary mt-3" data-toggle="modal" data-target="#updateModal"><i class="fa fa-pencil" style="margin-right: 1rem;"></i>Update Profile</button>
+            </div>
+            <div class="col-md-9">
+                <h4>{{ user.name }}</h4>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Contact:</strong> {{ user.contact[0] if user.contact else '' }}</p>
+                <p><strong>Date of Birth:</strong> {{ user.date_of_birth }}</p>
+                <p><strong>Role(s):</strong> {{ user.roles | join(', ') }}</p>
+
+                <div class="row" style="justify-content: space-between;">
+                    <div class="col-md-3">
+                        {% if current_user.has_role('farmer') %}
+                            <button class="btn btn-secondary mt-3" data-toggle="modal" data-target="#updateFarmModal">Update Farm Details</button>
+                        {% else %}
+                            <button class="btn btn-secondary mt-3" data-toggle="modal" data-target="#changeRole">Start selling</button>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-danger mt-3" id="st-delete-account"><i class="fa fa-trash" style="margin-right:.3rem;"></i>Delete account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container mt-5 st-delete-reason" id="st-delete-reason">    
+    <div class="card p-4 shadow">
+        <h2>Reason For Account Deletion</h2>
+        <div class="col-12">
+            <div class="col-12 text-center">
+                <textarea class="st-delete-account" rows="5" placeholder="Describe your reason for account deletion"></textarea>
+            </div>
+            <button class="btn btn-danger mt-3">Proceed With Deletion</button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Update Profile Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form method="POST" id="updateModalForm" action="{{url_for('helpers.update_profile')}}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">Update Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <div class="form-group">
+                        <label for="user_full_name">Full Name</label>
+                        <input type="text" class="form-control" id="user_full_name" name="user_full_name" value="{{ user.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_contact">Contact</label>
+                        <input type="text" class="form-control" id="user_contact" name="user_contact" value="{{ user.contact[0] if user.contact else '' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_dob">Date of Birth</label>
+                        <input type="date" class="form-control" id="user_dob" name="user_dob" value="{{ user.date_of_birth }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_profile_pic">Profile Picture</label>
+                        <input type="file" class="form-control-file" id="user_profile_pic" name="user_profile_pic" accept="image/*">
+                        <small class="form-text text-muted">Upload a square image for best results.</small>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <div style="width: 150px; height: 150px; margin: 0 auto; position: relative;">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture }}" class="img-fluid rounded-circle mb-3" id="updatedProfilePicPreview" alt="Profile Picture" width="120">
+                            {% else %}
+                                <img id="updatedProfilePicPreview"
+                                src="{{ user.profile_pic_url or url_for('static', filename='images/default.jpg') }}"
+                                alt="Preview"
+                                class="rounded-circle border"
+                                style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" id="updateProfileSubmitBtn">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Register farmer role -->
+<div class="modal fade" id="changeRole" tabindex="-1" role="dialog" aria-labelledby="changeRole" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <form method="POST" id="changeRoleModalForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeRoleModalLabel">Start Selling</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                  <!-- Farm Location & Map, Farm Size and Produce Category -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="farm_location">Farm Location</label>
+                            <input type="text" class="form-control" id="farm_location" name="farm_location" readonly required>
+
+                            <label for="farm_size">Farm Size (Acres)</label>
+                            <input type="number" step="0.01" class="form-control" id="farm_size" name="farm_size">
+
+                            <label for="produce_category">Produce Category</label>
+                            <select id="produce_category" class="form-control select2" multiple name="produce_category[]">
+                                {% for cat in categories %}
+                                    <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Select Farm Location on Map</label>
+                            <div id="map"></div>
+                            <!-- Hidden inputs to hold selected coordinates -->
+                            <input type="hidden" name="farm_latitude" id="farm_latitude">
+                            <input type="hidden" name="farm_longitude" id="farm_longitude">
+                        </div>
+                    </div>
+
+                    <!-- Produce Types and Farming Methods -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="produce_types">Produce Types</label>
+                            <select class="form-control select2" multiple name="produce_types[]" id="produce_types">
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="farming_methods">Farming Methods</label>
+                            <select class="form-control select2" multiple name="farming_methods[]" id="farming_methods">
+                                {% for method in farming_methods %}
+                                    <option>{{ method[0] }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                    </div>
+
+                    <!-- Availability Schedule and M-Pesa -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="availability_schedule">Produce Availability Schedule</label>
+                            <select class="form-control select2" multiple name="availability_schedule[]" id="availability_schedule">
+                                {% for schedule in months %}
+                                    <option>{{ schedule[0] }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="mpesa_number">M-Pesa Number</label>
+                            <input type="text" class="form-control" id="mpesa_number" name="mpesa_number" placeholder="07XXXXXXXX">
+                        </div>
+                    </div>
+
+                  <!-- Checkboxes -->
+                  <div class="form-row">
+                      <div class="form-group col-md-6">
+                          <div class="form-check mt-4">
+                              <input type="checkbox" class="form-check-input" id="transport" name="transport">
+                              <label class="form-check-label" for="transport">Transport Available</label>
+                          </div>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <div class="form-check mt-4">
+                              <input type="checkbox" class="form-check-input" id="storage" name="storage">
+                              <label class="form-check-label" for="storage">Storage Available</label>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">Register Now</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Updating farm details modal -->
+<div class="modal fade" id="updateFarmModal" tabindex="-1" role="dialog" aria-labelledby="updateFarm" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <form method="POST" id="updateFarmModalForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateFarmModalLabel">Update farm details {{ user.name }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Farm size and Produce Category -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="update_farm_size">Farm Size (Acres)</label>
+                            <input type="number" step="0.01" class="form-control" id="update_farm_size" name="update_farm_size">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="update_produce_category">Produce Category</label>
+                            <select id="update_produce_category" class="form-control select2" multiple name="update_produce_category[]">
+                                {% for cat in categories %}
+                                    <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                    </div>
+
+                    <!-- Produce Types and Farming Methods -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="update_produce_types">Produce Types</label>
+                            <select class="form-control select2" multiple name="update_produce_types[]" id="update_produce_types">
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="update_farming_methods">Farming Methods</label>
+                            <select class="form-control select2" multiple name="update_farming_methods[]" id="update_farming_methods">
+                                {% for method in farming_methods %}
+                                    <option>{{ method[0] }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                    </div>
+
+                    <!-- Availability Schedule and M-Pesa -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="update_availability_schedule">Produce Availability Schedule</label>
+                            <select class="form-control select2" multiple name="update_availability_schedule[]" id="update_availability_schedule">
+                                {% for schedule in months %}
+                                    <option>{{ schedule[0] }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd) to select multiple</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="update_mpesa_number">M-Pesa Number</label>
+                            <input type="text" class="form-control" id="update_mpesa_number" name="update_mpesa_number" placeholder="07XXXXXXXX">
+                        </div>
+                    </div>
+
+                    <!-- Checkboxes -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <div class="form-check mt-4">
+                                <input type="checkbox" class="form-check-input" id="update_transport" name="update_transport">
+                                <label class="form-check-label" for="update_transport">Transport Available</label>
+                            </div>
+                        </div>
+                      <div class="form-group col-md-6">
+                            <div class="form-check mt-4">
+                              <input type="checkbox" class="form-check-input" id="update_storage" name="update_storage">
+                              <label class="form-check-label" for="update_storage">Storage Available</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

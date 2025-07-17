@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTRC LIBRARY Email Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            font-family: 'Cursive', sans-serif;
+            text-align: center;
+            font-size: 28px;
+        }
+        p {
+            color: #444444;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .verification-code {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            color: #333333;
+            margin: 20px auto;
+        }
+        .footer {
+            text-align: center;
+            color: #aaaaaa;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 20px;">
+    <div class="container" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);">
+        
+        <!-- Logo and Brand -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="{{ url_for('static', filename='/images/logo1.png') }}" alt="SokoFresh Logo" style="max-width: 120px; margin-bottom: 10px;">
+            <h1 style="font-family: 'Cursive', sans-serif; color: #4CAF50; font-size: 28px;">SokoFresh</h1>
+        </div>
+
+        <!-- Greeting -->
+        <p style="color: #444444; font-size: 16px; line-height: 1.6;">Hello,</p>
+        <p style="color: #444444; font-size: 16px; line-height: 1.6;">Thank you for signing up with <strong><span style="font-family: cursive; color: #4CAF50;">SokoFresh</span></strong> — your trusted platform for fresh, local produce straight from the farm!</p>
+        
+        <!-- Verification Message -->
+        <p style="color: #444444; font-size: 16px; line-height: 1.6;">To secure your account and unlock the freshest features, please confirm your email by using the verification code below:</p>
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; font-size: 22px; font-weight: bold; color: #333333; margin: 20px 0;">
+            {{ verification_code }}
+        </div>
+
+        <!-- Expiry Note -->
+        <p style="color: #666666; font-size: 15px; line-height: 1.6;">This code will expire in one hour, so don’t let it wilt 🍃.</p>
+        
+        <!-- Disclaimer -->
+        <p style="color: #666666; font-size: 15px; line-height: 1.6;">If you didn’t request this verification or think this was a mistake, feel free to ignore this email.</p>
+
+        <!-- Closing -->
+        <p style="color: #444444; font-size: 16px; line-height: 1.6;">We’re excited to have you on board! Let’s make farm-to-fork smoother, together.</p>
+
+        <p style="color: #444444; font-size: 16px; line-height: 1.6;">Warm regards,<br><strong>The SokoFresh Team</strong></p>
+
+        <!-- Footer -->
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #dddddd;">
+        <p style="color: #aaaaaa; font-size: 13px; text-align: center;">&copy; 2025 SokoFresh. All rights reserved.</p>
+    </div>
+</body>
+</html>

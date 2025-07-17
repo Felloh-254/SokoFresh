@@ -1,0 +1,103 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+    <div class="post-form-container">
+        <h2>Post Your Product</h2>
+        <p>Fill in the details of your product below.</p>
+
+        <form method="POST" enctype="multipart/form-data" id="post-product-form">
+            
+            <!-- PRODUCT TYPE (pre-filtered for this farmer) & PRODUCT NAME -->
+            <div class="post-flex-group">
+                <div class="post-form-group">
+                    <label for="product_type_id">Product Type</label>
+                    <select class="form-control select2" multiple name="product_type_id" id="product_type_id" required>
+                    </select>
+                </div>
+
+                <div class="post-form-group">
+                    <label for="name">Product Name</label>
+                    <input type="text" name="product_name" id="name" placeholder="e.g. Red Onions" required />
+                </div>
+            </div>
+
+            <!-- DESCRIPTION & PRICE -->
+            <div class="post-flex-group">
+                <div class="post-form-group">
+                    <label for="unit">Unit</label>
+                    <select class="form-control select2" multiple name="product_unit" id="product_unit" required>
+                        <option value="kg">Kg</option>
+                        <option value="bag">Bags</option>
+                        <option value="litre">Litres</option>
+                        <option value="bunch">Bunches</option>
+                        <option value="piece">Pieces</option>
+                        <option value="crate">Crate</option>
+                        <option value="tin">Tins</option>
+                        <option value="sack">Sacks</option>
+                        <option value="tray">Tray</option>
+                        <option value="sachet">Sachet</option>
+                    </select>
+                </div>
+
+                <div class="post-form-group">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" name="product_quantity" id="quantity" min="1" required />
+                </div>
+            </div>
+
+            <!-- QUANTITY & UNIT -->
+            <div class="post-flex-group">
+                <div class="post-form-group">
+                    <label for="price">Unit Price (Ksh)</label>
+                    <input type="number" name="product_unit_price" id="price" min="1" required />
+                </div>
+
+                <div class="post-form-group">
+                    <label for="description">Product Description</label>
+                    <textarea name="product_description" id="description" rows="1" placeholder="Describe your product briefly..." required></textarea>
+                </div>
+            </div>
+
+            <!-- IMAGE -->
+            <div class="image-upload-section">
+                <label for="product_image">Upload Product Image</label>
+                <div class="image-upload-container" id="imageUploadContainer">
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" name="product_image" id="product_image" class="file-input" accept="image/*" required />
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <p class="upload-text">Drop your image here or click to browse</p>
+                        <p class="upload-subtext">Choose a high-quality image of your product</p>
+                        <div class="file-types">
+                            <span class="file-type-tag">JPG</span>
+                            <span class="file-type-tag">PNG</span>
+                            <span class="file-type-tag">WEBP</span>
+                        </div>
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-preview" id="imagePreview">
+                        <img id="previewImage" class="preview-image" src="" alt="Product Preview">
+                        <div class="image-overlay">
+                            <div class="image-actions">
+                                <button type="button" class="action-btn change" id="changeImage">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button type="button" class="action-btn remove" id="removeImage">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,628 @@
+{% extends "/shared/base.html" %}
+{% block content %}
+{% if 'farmer' in user.roles %}
+    <div class="support-container">
+        <div class="support-page-header">
+            <h1 class="support-page-title">Support Center</h1>
+            <p class="support-page-subtitle">We're here to help you succeed with your fresh produce business</p>
+            <div class="support-status-indicator">
+                <div class="support-pulse"></div>
+                Support team is online
+            </div>
+        </div>
+
+        <div class="support-grid">
+            <!-- Contact Support -->
+            <div class="support-section">
+                <span class="support-section-icon"><i class="fa fa-phone"></i></span>
+                <h2 class="support-section-title">Contact Support</h2>
+                <p class="support-section-description">Get in touch with our support team for immediate assistance with your account, orders, or technical issues.</p>
+                
+                <div class="support-contact-grid">
+                    <a href="tel:+254740448956" class="support-contact-item">
+                        <span class="support-contact-icon">📱</span>
+                        <div>
+                            <div>Call Us</div>
+                            <small>+254740448956</small>
+                        </div>
+                    </a>
+                    <a href="mailto:support@sokofresh.co.ke" class="support-contact-item">
+                        <span class="support-contact-icon">✉️</span>
+                        <div>
+                            <div>Email</div>
+                            <small>support@sokofresh.co.ke</small>
+                        </div>
+                    </a>
+                    <a href="#" class="support-contact-item" onclick="openWhatsApp()">
+                        <span class="support-contact-icon">💬</span>
+                        <div>
+                            <div>WhatsApp</div>
+                            <small>Chat with us</small>
+                        </div>
+                    </a>
+                    <a href="#" class="support-contact-item" onclick="openLiveChat()">
+                        <span class="support-contact-icon">🔴</span>
+                        <div>
+                            <div>Live Chat</div>
+                            <small>Available 6AM-10PM</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Help Resources -->
+            <div class="support-section">
+                <span class="section-icon">📚</span>
+                <h2 class="section-title">Help Resources</h2>
+                <p class="section-description">Access guides, tutorials, and resources to help you make the most of SokoFresh platform.</p>
+                
+                <div class="resources-grid">
+                    <div class="resource-card" onclick="openResource('getting-started')">
+                        <div class="resource-icon">🚀</div>
+                        <div class="resource-title">Getting Started</div>
+                        <div class="resource-description">Learn the basics</div>
+                    </div>
+                    <div class="resource-card" onclick="openResource('farming-tips')">
+                        <div class="resource-icon">🌱</div>
+                        <div class="resource-title">Farming Tips</div>
+                        <div class="resource-description">Best practices</div>
+                    </div>
+                    <div class="resource-card" onclick="openResource('pricing-guide')">
+                        <div class="resource-icon">💰</div>
+                        <div class="resource-title">Pricing Guide</div>
+                        <div class="resource-description">Set competitive prices</div>
+                    </div>
+                    <div class="resource-card" onclick="openResource('video-tutorials')">
+                        <div class="resource-icon">🎥</div>
+                        <div class="resource-title">Video Tutorials</div>
+                        <div class="resource-description">Step-by-step guides</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 class="faq-title">Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I add products to my listing?
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    To add products, go to "My Listings" in your farmer dashboard, click "Add New Product", fill in the product details including name, category, price, and stock quantity, then submit for approval. Your product will be live once approved by our team.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I receive payments from customers?
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Payments are processed through M-Pesa integration. When customers pay, the money is held securely and transferred to your registered M-Pesa account within 24 hours after order completion. You can track all payments in the "Payouts" section.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What are the commission rates?
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    SokoFresh charges a 8% commission on each completed sale. This covers payment processing, platform maintenance, customer support, and marketing. There are no upfront fees or monthly charges.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I handle delivery and logistics?
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    You can choose between self-delivery or using our partner logistics network. For local deliveries within 10km, many farmers prefer self-delivery. For longer distances, our logistics partners can handle pickup and delivery for an additional fee.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What quality standards do I need to meet?
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Products should be fresh, properly cleaned, and meet basic food safety standards. We provide guidelines for proper handling, packaging, and storage. Our quality team may conduct random checks to ensure customer satisfaction.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How can I increase my sales on the platform?
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Focus on high-quality photos, competitive pricing, accurate product descriptions, maintaining good stock levels, and providing excellent customer service. Customers who rate you highly will see your products promoted in search results.
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="support-contact-form">
+            <h2 class="support-form-title">Send us a Message</h2>
+            <form id="supportForm" onsubmit="submitSupportForm(event)">
+                <div class="support-form-group">
+                    <label class="support-form-label">Subject</label>
+                    <select class="support-form-select" required>
+                        <option value="">Select a topic</option>
+                        <option value="technical">Technical Issue</option>
+                        <option value="account">Account & Payments</option>
+                        <option value="orders">Order Management</option>
+                        <option value="products">Product Listings</option>
+                        <option value="general">General Inquiry</option>
+                        <option value="suggestion">Suggestion/Feedback</option>
+                    </select>
+                </div>
+                
+                <div class="support-form-group">
+                    <label class="support-form-label">Your Name</label>
+                    <input type="text" class="support-form-input" value="{{ user.name }}" required>
+                </div>
+                
+                <div class="support-form-group">
+                    <label class="support-form-label">Email Address</label>
+                    <input type="email" class="support-form-input" value="{{ user.email }}" required>
+                </div>
+                
+                <div class="support-form-group">
+                    <label class="support-form-label">Phone Number</label>
+                    <input type="tel" class="support-form-input" placeholder="+254..." required>
+                </div>
+                
+                <div class="support-form-group">
+                    <label class="support-form-label">Message</label>
+                    <textarea class="support-form-textarea" placeholder="Please describe your issue or question in detail..." required></textarea>
+                </div>
+                
+                <button type="submit" class="support-submit-btn">Send Message</button>
+            </form>
+        </div>
+    </div>
+{% elif 'buyer' in user.roles and not 'farmer' in user.roles  %}
+<div class="support-container">
+    <div class="support-page-header">
+        <h1 class="support-page-title">Customer Support</h1>
+        <p class="support-page-subtitle">We're here to make your shopping experience smooth and satisfying</p>
+        <div class="support-status-indicator">
+            <div class="support-pulse"></div>
+            Support team is online
+        </div>
+    </div>
+
+    <div class="support-grid">
+        <!-- Contact Support -->
+        <div class="support-section">
+            <span class="support-section-icon"><i class="fa fa-phone"></i></span>
+            <h2 class="support-section-title">Get Help</h2>
+            <p class="support-section-description">Need assistance with your orders, deliveries, or payments? Reach out to our team anytime.</p>
+
+            <div class="support-contact-grid">
+                <a href="tel:+254740448956" class="support-contact-item">
+                    <span class="support-contact-icon">📱</span>
+                    <div>
+                        <div>Call Us</div>
+                        <small>+254740448956</small>
+                    </div>
+                </a>
+                <a href="mailto:support@sokofresh.co.ke" class="support-contact-item">
+                    <span class="support-contact-icon">✉️</span>
+                    <div>
+                        <div>Email</div>
+                        <small>support@sokofresh.co.ke</small>
+                    </div>
+                </a>
+                <a href="#" class="support-contact-item" onclick="openWhatsApp()">
+                    <span class="support-contact-icon">💬</span>
+                    <div>
+                    <div>WhatsApp</div>
+                    <small>Chat with us</small>
+                    </div>
+                </a>
+                <a href="#" class="support-contact-item" onclick="openLiveChat()">
+                    <span class="support-contact-icon">🔴</span>
+                    <div>
+                        <div>Live Chat</div>
+                        <small>Available 6AM–10PM</small>
+                    </div>
+                </a>
+            </div>
+    </div>
+
+    <!-- Help Resources -->
+    <div class="support-section">
+      <span class="section-icon">📚</span>
+      <h2 class="section-title">Help Center</h2>
+      <p class="section-description">Explore common questions and useful guides to enhance your shopping journey.</p>
+
+      <div class="resources-grid">
+        <div class="resource-card" onclick="openResource('placing-orders')">
+          <div class="resource-icon">🛒</div>
+          <div class="resource-title">Placing Orders</div>
+          <div class="resource-description">How to buy fresh produce</div>
+        </div>
+        <div class="resource-card" onclick="openResource('delivery-tracking')">
+          <div class="resource-icon">🚚</div>
+          <div class="resource-title">Delivery & Tracking</div>
+          <div class="resource-description">Know where your order is</div>
+        </div>
+        <div class="resource-card" onclick="openResource('payment-methods')">
+          <div class="resource-icon">💳</div>
+          <div class="resource-title">Payment Methods</div>
+          <div class="resource-description">How to pay securely</div>
+        </div>
+        <div class="resource-card" onclick="openResource('returns-refunds')">
+          <div class="resource-icon">↩️</div>
+          <div class="resource-title">Returns & Refunds</div>
+          <div class="resource-description">Your buyer protection</div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+    <h2 class="faq-title">Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        How do I place an order?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        Browse products, add items to your cart, and proceed to checkout. Choose your delivery location and preferred payment method, then confirm your order.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        How long does delivery take?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        Most deliveries are completed within 24–48 hours depending on your location. You’ll receive updates via SMS or email once your order is out for delivery.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        What payment options are available?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        We accept M-Pesa, Airtel Money, and bank card payments. You can also use cash on delivery in select areas.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        What if I receive a damaged item?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        If your order is damaged or not up to standard, contact us within 12 hours. We’ll arrange for a refund or replacement depending on the case.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Can I cancel or change my order?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        You can cancel or change your order within 1 hour of placing it. After that, it may already be in preparation or transit.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Is my personal data safe on SokoFresh?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        Absolutely. We use modern encryption and follow data protection best practices to keep your information secure.
+      </div>
+    </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="support-contact-form">
+    <h2 class="support-form-title">Contact Us</h2>
+    <form id="supportForm" onsubmit="submitSupportForm(event)">
+      <div class="support-form-group">
+        <label class="support-form-label">Subject</label>
+        <select class="support-form-select" required>
+          <option value="">Select a topic</option>
+          <option value="delivery">Delivery Issue</option>
+          <option value="payment">Payment Problem</option>
+          <option value="product">Product Inquiry</option>
+          <option value="refund">Refund Request</option>
+          <option value="general">General Question</option>
+        </select>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Your Name</label>
+        <input type="text" class="support-form-input" value="{{ user.name }}" required>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Email Address</label>
+        <input type="email" class="support-form-input" value="{{ user.email }}" required>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Phone Number</label>
+        <input type="tel" class="support-form-input" placeholder="+254..." required>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Message</label>
+        <textarea class="support-form-textarea" placeholder="Please describe your issue or question in detail..." required></textarea>
+      </div>
+
+      <button type="submit" class="support-submit-btn">Send Message</button>
+    </form>
+    </div>
+</div>
+{% else %}
+<div class="support-container">
+  <div class="support-page-header">
+    <h1 class="support-page-title">Welcome to SokoFresh Support</h1>
+    <p class="support-page-subtitle">Have questions before signing up? We're happy to help.</p>
+    <div class="support-status-indicator">
+      <div class="support-pulse"></div>
+      Support team is online
+    </div>
+  </div>
+
+  <div class="support-grid">
+    <!-- Contact Support -->
+    <div class="support-section">
+      <span class="support-section-icon"><i class="fa fa-phone"></i></span>
+      <h2 class="support-section-title">Talk to Us</h2>
+      <p class="support-section-description">Not yet a member? No worries. Reach out with your questions about how SokoFresh works.</p>
+
+      <div class="support-contact-grid">
+        <a href="tel:+254740448956" class="support-contact-item">
+          <span class="support-contact-icon">📱</span>
+          <div>
+            <div>Call Us</div>
+            <small>+254740448956</small>
+          </div>
+        </a>
+        <a href="mailto:support@sokofresh.co.ke" class="support-contact-item">
+          <span class="support-contact-icon">✉️</span>
+          <div>
+            <div>Email</div>
+            <small>support@sokofresh.co.ke</small>
+          </div>
+        </a>
+        <a href="#" class="support-contact-item" onclick="openWhatsApp()">
+          <span class="support-contact-icon">💬</span>
+          <div>
+            <div>WhatsApp</div>
+            <small>Ask us anything</small>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Learn About SokoFresh -->
+    <div class="support-section">
+      <span class="section-icon">🔍</span>
+      <h2 class="section-title">Learn About SokoFresh</h2>
+      <p class="section-description">Explore how our platform connects you to fresh, locally-sourced produce — and why thousands trust us daily.</p>
+
+      <div class="resources-grid">
+        <div class="resource-card" onclick="openResource('how-it-works')">
+          <div class="resource-icon">🌍</div>
+          <div class="resource-title">How It Works</div>
+          <div class="resource-description">Platform overview</div>
+        </div>
+        <div class="resource-card" onclick="openResource('benefits')">
+          <div class="resource-icon">✨</div>
+          <div class="resource-title">Why SokoFresh</div>
+          <div class="resource-description">Key benefits</div>
+        </div>
+        <div class="resource-card" onclick="openResource('getting-started')">
+          <div class="resource-icon">🚀</div>
+          <div class="resource-title">Getting Started</div>
+          <div class="resource-description">How to sign up</div>
+        </div>
+        <div class="resource-card" onclick="openResource('faq')">
+          <div class="resource-icon">❓</div>
+          <div class="resource-title">FAQ</div>
+          <div class="resource-description">Top questions answered</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <h2 class="faq-title">Common Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Do I need an account to buy or sell?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        Yes, you'll need to create a free account to place orders or list products. It helps us ensure quality and secure transactions.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Is there a cost to join SokoFresh?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        No, creating an account is completely free for both buyers and farmers.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        How can I trust the sellers?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        We verify all farmers, enforce quality guidelines, and allow you to rate every order. You're covered by our satisfaction guarantee.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        What locations do you serve?
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        We currently serve major towns and cities across Kenya. Enter your location at checkout to check delivery availability.
+      </div>
+    </div>
+  </div>
+
+  <p class="center-text">Ready to experience fresh, local produce?</p>
+<a href="/register" class="cta-btn">Create Free Account</a>
+
+
+  <!-- Contact Form -->
+  <div class="support-contact-form">
+    <h2 class="support-form-title">Send Us a Message</h2>
+    <form id="supportForm" onsubmit="submitSupportForm(event)">
+      <div class="support-form-group">
+        <label class="support-form-label">Subject</label>
+        <select class="support-form-select" required>
+          <option value="">Select a topic</option>
+          <option value="general">General Inquiry</option>
+          <option value="signup">Help Signing Up</option>
+          <option value="benefits">Questions About Benefits</option>
+          <option value="security">Platform Security</option>
+          <option value="delivery">Delivery Questions</option>
+        </select>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Your Name</label>
+        <input type="text" class="support-form-input" placeholder="Full Name" required>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Email Address</label>
+        <input type="email" class="support-form-input" placeholder="you@example.com" required>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Phone Number</label>
+        <input type="tel" class="support-form-input" placeholder="+254..." required>
+      </div>
+
+      <div class="support-form-group">
+        <label class="support-form-label">Message</label>
+        <textarea class="support-form-textarea" placeholder="What's on your mind?" required></textarea>
+      </div>
+
+      <button type="submit" class="support-submit-btn">Send Message</button>
+    </form>
+  </div>
+</div>
+
+{% endif %}
+
+    <script>
+        // FAQ Toggle Functionality
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const toggle = element.querySelector('.faq-toggle');
+            
+            answer.classList.toggle('show');
+            toggle.classList.toggle('rotate');
+        }
+
+        // Contact Functions
+        function openWhatsApp() {
+            window.open('https://wa.me/254740448956?text=Hello%20SokoFresh%20Support,%20I%20need%20help%20with...', '_blank');
+        }
+
+        function openLiveChat() {
+            alert('Live chat feature will be implemented soon. Please use WhatsApp or call us for immediate assistance.');
+        }
+
+        // Resource Functions
+        function openResource(type) {
+            const resources = {
+                'getting-started': 'Opening Getting Started Guide...',
+                'farming-tips': 'Opening Farming Tips & Best Practices...',
+                'pricing-guide': 'Opening Pricing Strategy Guide...',
+                'video-tutorials': 'Opening Video Tutorial Library...'
+            };
+            
+            alert(resources[type] || 'Resource not found');
+        }
+
+        // Form Submission
+        function submitSupportForm(event) {
+            event.preventDefault();
+            
+            // Show loading state
+            const submitBtn = event.target.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            // Simulate form submission
+            setTimeout(() => {
+                alert('Thank you for contacting us! We will get back to you within 24 hours.');
+                event.target.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        }
+
+        // Auto-expand first FAQ item
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstFAQ = document.querySelector('.faq-question');
+            if (firstFAQ) {
+                toggleFAQ(firstFAQ);
+            }
+        });
+    </script>
+    <style>
+        .center-text {
+          text-align: center;
+          font-size: 1.2rem;
+          margin-top: 3rem;
+          color: #333;
+        }
+
+        .cta-btn {
+          display: inline-block;
+          margin: 1rem auto;
+          padding: 0.75rem 2rem;
+          background-color: #28a745; /* SokoFresh green */
+          color: white;
+          font-size: 1rem;
+          font-weight: 600;
+          border: none;
+          border-radius: 8px;
+          text-decoration: none;
+          transition: background-color 0.3s ease, transform 0.2s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-btn:hover {
+          background-color: #218838;
+          transform: translateY(-2px);
+        }
+    </style>
+{% endblock %}

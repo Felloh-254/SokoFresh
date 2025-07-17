@@ -1,0 +1,338 @@
+{% extends "shared/base.html" %}
+{% block content %}
+<!-- Hidden login status flag -->
+<meta name="user-authenticated" content="{{ 'true' if current_user.is_authenticated else 'false' }}">
+<div class="container-fluid px-4 py-2">
+    <!-- Intro Section -->
+    <div class="text-center mb-2">
+        <h1 class="display-4 text-black fw-bold mb-3">Discover Fresh Produce</h1>
+        <p class="lead text-black-50 mb-2">Premium quality, directly from local farmers</p>
+    </div>
+
+    <!-- Enhanced Filters -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <form method="get" class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <div class="row align-items-end">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-muted medium">CATEGORY</label>
+                            <select class="form-select form-select-lg border-0 shadow-sm" name="category" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                {% for id, name_en, name_sw in categories %}
+                                    <option value="{{ name_en }}" {% if request.args.get('category') == name_en %}selected{% endif %}>
+                                        {{ name_en }} ({{ name_sw }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-lg-6 col-md-6 mb-3">
+                            <div class="position-relative">
+                                <input type="text" class="form-control form-control-lg border-0 shadow-sm ps-5"
+                                    placeholder="What are you looking for?" name="q"
+                                    value="{{ request.args.get('q', '') }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3">
+                            <button type="submit"
+                                class="marketplace-search-btn btn-lg w-100 text-white fw-semibold shadow-lg"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(255,107,107,0.4)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255,107,107,0.3)'">
+                                <i class="fa fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="row g-4" id="productList">
+        {% for product in products %}
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12" data-category="{{ product.product_category }}">
+
+                <div class="card border-0 shadow-lg h-100 product-card futuristic-card position-relative">
+
+                    <button class="like-btn" onclick="toggleLike({{ product.product_id }}, this)">
+                        <i class="fa fa-heart {% if product.product_id in user_liked_ids %}text-danger{% endif %}"></i>
+                    </button>
+
+                    <!-- Image Container -->
+                    <div class="position-relative overflow-hidden image-container">
+                        <img src="{{ product.product_image_url }}"
+                             class="card-img-top futuristic-image"
+                             alt="{{ product.product_name_en }}">
+
+                        <!-- Overlay gradient -->
+                        <div class="image-overlay-gradient"></div>
+
+                        <!-- Category badge -->
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge px-3 py-2 fw-normal">Fresh</span>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <button class="add-to-cart-btn" onclick="addToCart({{ product.product_id }}, {{ product.product_quantity }})">
+                            <i class="fa fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body p-3">
+                        <div class="mb-1">
+                            <h5 class="card-title fw-bold mb-0 text-dark">{{ product.product_name }}</h5>
+                            <p class="text-muted small mb-0" style="font-style: italic;">{{ product.product_name_local }}</p>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between card-price">
+                            <div>
+                                <span class="text-muted small">Price</span>
+                                <div class="fw-bold text-success" style="font-size: 1.2rem;">
+                                    KES {{ product.product_unit_price }} / {{ product.product_unit }}
+                                </div>
+                            </div>
+                            <a class="btn btn-outline-primary btn-sm px-4 py-2 view-details-btn"
+                               data-id="{{ product.product_id }}"
+                               data-name="{{ product.product_name }}"
+                               data-local="{{ product.product_name_local }}"
+                               data-desc="{{ product.product_description }}"
+                               data-price="KES {{ product.product_unit_price }}"
+                               data-qty="{{ product.product_quantity }}"
+                               data-unit="{{ product.product_unit }}"
+                               data-img="{{ product.product_image_url }}"
+                               onclick="openProductModal(this)">
+                               View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mp-overlay" id="productModal">
+                <div class="mp-modal">
+                    <div class="mp-header">
+                        <h3 class="mp-title">Product Details</h3>
+                        <button class="mp-close" onclick="closeProductModal()">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mp-body">
+                        <div class="mp-image-section">
+                            <img id="mpProductImage" src="" alt="Product" class="mp-image">
+                            <div class="mp-badge">Fresh</div>
+                            <div class="mp-drop-details">
+                                <div class="mp-drop-location mb-3">
+                                    <label for="buyer-drop-location" class="form-label small fw-bold text-muted mb-2">Drop Location</label>
+                                    <select id="buyer-drop-location" class="form-select" required>
+                                        <option value="" disabled selected>Select drop location</option>
+                                        <option value="Kikuyu Town">Kikuyu Town</option>
+                                        <option value="Ngong Road">Ngong Road</option>
+                                        <option value="Karen">Karen</option>
+                                        <option value="Limuru Town">Limuru Town</option>
+                                        <option value="Ngecha">Ngecha</option>
+                                        <option value="Ruaka">Ruaka</option>
+                                    </select>
+                                </div>
+
+                                <div class="payment-method">
+                                    <label class="form-label small fw-bold text-muted d-block mb-2">Payment Method</label>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="payment-method" id="pmCash" value="cash on delivery" required>
+                                            <label class="form-check-label" for="pmCash">Cash on Delivery</label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="payment-method" id="pmMpesa" value="mpesa" required>
+                                            <label class="form-check-label" for="pmMpesa">Mpesa</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mp-content">
+                            <div class="mp-product-info">
+                                <h2 id="mpProductName" class="mp-name"></h2>
+                                <p id="mpProductLocal" class="mp-local"></p>
+                                <p id="mpProductDesc" class="mp-description"></p>
+                                
+                                <div class="mp-price-section">
+                                    <div class="mp-price-label">Price per unit</div>
+                                    <div id="mpProductPrice" class="mp-price-value"></div>
+                                </div>
+                                
+                                <div class="mp-info-grid">
+                                    <div class="mp-info-item">
+                                        <div class="mp-info-label">Stock Available</div>
+                                        <div id="mpProductQty" class="mp-info-value"></div>
+                                    </div>
+                                    <div class="mp-info-item">
+                                        <div class="mp-info-label">Unit Type</div>
+                                        <div id="mpProductUnit" class="mp-info-value"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mp-actions">
+                                <div class="mp-quantity-selector">
+                                    <button type="button" class="mp-qty-btn" onclick="updateQty(-1)">-</button>
+                                    <input type="number" id="mpQtyInput" class="mp-qty-input" value="1" min="1">
+                                    <button type="button" class="mp-qty-btn" onclick="updateQty(1)">+</button>
+                                </div>
+                                <button class="mp-btn mp-btn-primary" onclick="addToCart({
+                                    id: '{{ product.product_id }}',
+                                    name: '{{ product.product_name|escape }}',
+                                    price: {{ product.product_unit_price }}
+                                })">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </button>
+                                <button class="mp-btn mp-btn-secondary">
+                                    <i class="fa fa-heart"></i>
+                                </button>
+                            </div>
+                            <button class="mp-btn mp-btn-primary mp-purchase">Place Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fa fa-user fa-5x text-white-50"></i>
+                    </div>
+                    <h4 class="text-white mb-2">No products found</h4>
+                    <p class="text-white-50">Try adjusting your search or browse all categories</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination buttons -->
+    <nav aria-label="Page navigation" style="margin-top: 1rem;">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('buyers.marketplace', page=page-1) }}" tabindex="-1">« Prev</a>
+            </li>
+
+            {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('buyers.marketplace', page=p) }}">{{ p }}</a>
+                </li>
+            {% endfor %}
+
+                <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('buyers.marketplace', page=page+1) }}">Next »</a>
+                </li>
+        </ul>
+    </nav>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Hover effect
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.background = '#0d6efd';
+            btn.style.color = 'white';
+            btn.style.transform = 'scale(1.05)';
+            btn.style.transition = 'all 0.2s ease';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.background = 'transparent';
+            btn.style.color = '#0d6efd';
+            btn.style.transform = 'scale(1)';
+        });
+
+        // Click: Open modal
+        btn.addEventListener('click', () => {
+            openProductModal(btn);
+        });
+    });
+
+    // document.querySelectorAll('.like-btn').forEach(btn => {
+    //     btn.addEventListener('click', () => {
+    //         btn.classList.toggle('liked');
+    //         // You can handle storing this state, animation, or AJAX
+    //     });
+    // });
+});
+
+</script>
+<style>
+    .form-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        display: block;
+        margin-bottom: 0.4rem;
+    }
+
+    .form-select {
+        width: 70%;
+        padding: 0.3rem 0.6rem;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        font-size: 0.95rem;
+        color: #2d3748;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        appearance: none;
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1.2em;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #14a334;
+        box-shadow: 0 0 0 2px rgba(20, 163, 52, 0.2);
+    }
+
+    .form-check-input[type="radio"] {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #14a334;
+        border-radius: 50%;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+
+    .form-check-input[type="radio"]:checked {
+        background-color: #14a334;
+    }
+
+    .form-check-label {
+        font-size: 0.9rem;
+        color: #2d3748;
+        cursor: pointer;
+    }
+
+    .payment-method {
+        padding: 0 1rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .mp-drop-location {
+        padding: 0 1rem;
+    }
+</style>
+{% endblock %}

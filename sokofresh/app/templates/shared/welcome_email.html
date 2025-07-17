@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Welcome to SokoFresh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            font-family: 'Cursive', sans-serif;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #444444;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px auto;
+            max-width: 120px;
+        }
+        .footer {
+            text-align: center;
+            color: #888888;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='/images/logo1.png') }}" alt="SokoFresh Logo" class="logo" />
+        <h1>Welcome to <span style="font-family: cursive;">SokoFresh</span></h1>
+        <p>Hello {{ user_name }},</p>
+        <p>We're absolutely thrilled to welcome you to <strong>SokoFresh</strong> – where fresh meets local. 🌱</p>
+        <p>As a member of our growing farm-to-fork community, you now have access to fresh produce, trusted local farmers, and a smarter way to buy and sell food – sustainably.</p>
+        <p>Whether you're a buyer or a farmer, we're here to support your journey with innovative tools and a vibrant ecosystem. Go ahead, explore the marketplace, and let's grow together!</p>
+        <p>If you ever need help, our team is just a click away.</p>
+        <a href="#" class="button">Go to Your Dashboard</a>
+        <p class="footer">Thank you for joining <strong>SokoFresh</strong>!<br/>Together, let's make food systems better.</p>
+    </div>
+</body>
+</html>

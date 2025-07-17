@@ -1,0 +1,188 @@
+{% extends "shared/base.html" %}
+{% block content %}
+    <div class="listing-container">
+        <div class="listing-page-header">
+            <div class="listing-header-content">
+                <h4 class="listing-page-title">My Product Listings</h4>
+            </div>
+
+            <div class="listing-actions-bar">
+                <div class="listing-search-filter">
+                    <input type="text" class="listing-search-box" placeholder="Search your products..." id="listingSearchInput">
+                    <select class="listing-filter-select" id="listingStatusFilter">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                    <select class="listing-filter-select" id="listingCategoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="vegetables">Vegetables</option>
+                        <option value="fruits">Fruits</option>
+                        <option value="grains">Grains</option>
+                        <option value="herbs">Herbs</option>
+                    </select>
+                </div>
+                <button class="listing-add-product-btn">
+                    <a href="/farmer/post-product" style="text-decoration: none; color: #fff;"><i class="fa fa-plus" style="margin-right: .3rem;"></i> Add New Product</a>
+                </button>
+            </div>
+        </div>
+
+        <div class="listing-grid" id="listingsGrid">
+            {% if products %}
+                {% for product in products %}
+                    <div class="listing-card" data-status="active" data-category="vegetables">
+                        <div class="listing-product-image">
+                            <img src="{{ product.product_image_url }}" alt="{{ product.product_name }}">
+                            <span class="listing-status-badge listing-status-active">Active</span>
+                        </div>
+                        <div class="listing-card-content">
+                            <h3 class="listing-product-name">{{ product.product_name }}</h3>
+                            <div class="listing-product-price">
+                                <span>KSh {{ product.product_unit_price }} /{{ product.product_unit }}</span>
+                                <span><small>Orders: 0 remaining</small></span>
+                            </div>
+                            <div class="listing-product-details">
+                                <span>Stock: {{ product.product_quantity }} {{ product.product_unit }}</span>
+                                <span>Sales: 23 this week</span>
+                            </div>
+                            <div class="listing-card-actions">
+                                <button class="listing-btn listing-btn-edit"
+                                    data-toggle="modal"
+                                    data-target="#editProductModal"
+                                    data-id="{{ product.product_id }}"
+                                    data-name="{{ product.product_name }}"
+                                    data-unit="{{ product.product_unit }}"
+                                    data-qty="{{ product.product_quantity }}"
+                                    data-price="{{ product.product_unit_price }}"
+                                    data-desc="{{ product.product_description }}"
+                                    data-img="{{ product.product_image_url }}">
+                                    Edit
+                                </button>
+
+                                <button class="listing-btn listing-btn-toggle">Pause</button>
+                                <button class="listing-btn listing-btn-delete">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You have no listings yet. Add a product to get started!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <form method="POST" enctype="multipart/form-data" id="editProductForm" class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductLabel">Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+
+                    <!-- Hidden User ID -->
+                    <input type="hidden" name="edit_product_id" id="edit_product_id">
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="edit_name">Product Name</label>
+                            <input type="text" name="edit_name" id="edit_name" class="form-control" placeholder="e.g. Red Onions" value="" required>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="edit_unit">Unit</label>
+                            <select class="form-control select2" name="edit_unit" id="edit_unit" required>
+                                <option value="kg">Kg</option>
+                                <option value="bag">Bags</option>
+                                <option value="litre">Litres</option>
+                                <option value="bunch">Bunches</option>
+                                <option value="piece">Pieces</option>
+                                <option value="crate">Crate</option>
+                                <option value="tin">Tins</option>
+                                <option value="sack">Sacks</option>
+                                <option value="tray">Tray</option>
+                                <option value="sachet">Sachet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Unit & Quantity -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="edit_quantity">Quantity</label>
+                            <input type="number" name="edit_quantity" id="edit_quantity" class="form-control" min="1" required>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="edit_price">Unit Price (Ksh)</label>
+                            <input type="number" name="edit_price" id="edit_price" class="form-control" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Price & Description -->
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="edit_description">Description</label>
+                            <textarea name="edit_description" id="edit_description" class="form-control" rows="2" placeholder="Briefly describe your product..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- image upload section -->
+                    <div class="image-upload-section">
+                        <label for="product_image">Upload Product Image</label>
+                        <div class="image-upload-container" id="imageUploadContainer">
+                            <div class="upload-area" id="uploadArea">
+                                <input type="file" name="product_image" id="product_image" class="file-input" accept="image/*" required />
+                                <input type="hidden" name="existing_image_url" id="existing_image_url">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <p class="upload-text">Drop your image here or click to browse</p>
+                                <p class="upload-subtext">Choose a high-quality image of your product</p>
+                                <div class="file-types">
+                                    <span class="file-type-tag">JPG</span>
+                                    <span class="file-type-tag">PNG</span>
+                                    <span class="file-type-tag">WEBP</span>
+                                </div>
+                                <div class="upload-progress" id="uploadProgress">
+                                    <div class="progress-bar" id="progressBar"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="image-preview" id="imagePreview">
+                                <img id="previewImage" class="preview-image" src="" alt="Product Preview">
+                                <div class="image-overlay">
+                                    <div class="image-actions">
+                                        <button type="button" class="action-btn change" id="changeImage">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="action-btn remove" id="removeImage">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="file-info">
+                                    <div class="file-name" id="fileName"></div>
+                                    <div class="file-size" id="fileSize"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
