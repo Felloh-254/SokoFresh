@@ -1,5 +1,5 @@
 import os, psycopg2
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, render_template
 from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -137,5 +137,38 @@ def create_app():
     # Expose google outh globally
     app.oauth = oauth
     app.google = google
+
+    @app.errorhandler(Exception)
+    def handle_all_errors(e):
+        code = getattr(e, 'code', 500)
+
+        error_titles = {
+            400: "Oops — That request was bad",
+            403: "Access denied — No sneaking in",
+            404: "Oops — The page won't be found",
+            500: "Uh-oh — Server’s having a meltdown",
+        }
+
+        error_messages = {
+            400: "Your browser sent something my server couldn’t digest.",
+            403: "Even the database says you’re not allowed here.",
+            404: "Looks like the thing you were after took a detour into the void.",
+            500: "I promise I didn’t trip over the cable… probably.",
+        }
+
+        fun_quotes = {
+            400: "Don’t blame me — you clicked it.",
+            403: "No entry — velvet ropes and all.",
+            404: "Will you never leave me in peace? — 404's dramatic cry.",
+            500: "Smoke is coming out of the server… metaphorically.",
+        }
+
+        return render_template(
+            "/shared/error.html",
+            code=code,
+            title=error_titles.get(code, "An unexpected error occurred"),
+            message=error_messages.get(code, "Something went wrong."),
+            fun_quote=fun_quotes.get(code, "Drama intensifies.")
+        ), code
 
     return app

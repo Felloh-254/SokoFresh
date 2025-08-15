@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Receipt #{{ order.order_reference_number }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #ffffff;
+            min-height: 100vh;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            position: absolute;
+        }
+
+        .logo-container img {
+            height: 20px;
+            width: 20px;
+        }
+
+        .logo-container p {
+            text-decoration: none;
+            font-weight: bold;
+            color: #0d0e0e;
+            text-shadow: -5px 4px 12px;
+            font-family: cursive;
+            font-size: 15px;
+        }
+        
+        .receipt-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95em;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 24px;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 2px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .info-item {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+        
+        .info-item:hover {
+            background: #edf2f7;
+            transform: translateY(-1px);
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-size: 0.7em;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 0.9em;
+            color: #111827;
+            font-weight: 500;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            font-size: 0.8em;
+        }
+        
+        .items-table th {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7em;
+            letter-spacing: 0.5px;
+        }
+        
+        .items-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .items-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .total-section {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #16a34a;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.65em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .status-pending {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            color: #c2410c;
+            border: 1px solid #fb923c;
+        }
+        
+        .status-confirmed {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #d97706;
+            border: 1px solid #f59e0b;
+        }
+        
+        .status-delivered {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #16a34a;
+            border: 1px solid #22c55e;
+        }
+        
+        .status-cancelled {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #374151;
+            border: 1px solid #6b7280;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            color: #374151;
+            font-size: 0.75em;
+            border-top: 1px solid rgba(0,0,0,0.04);
+        }
+        
+        .footer .company-info {
+            margin-bottom: 8px;
+        }
+        
+        .footer .thank-you {
+            font-size: 0.95em;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        @media print {
+            .logo-container {
+                position: relative !important;
+                margin-bottom: 10px;
+            }
+
+            .info-grid {
+                display: table;
+                width: 100%;
+            }
+            
+            .info-item {
+                display: table-row;
+            }
+
+            .info-label,
+            .info-value {
+                display: table-cell;
+                padding: 4px 8px;
+            }
+
+            .receipt-container {
+                background: #ffffff !important;
+                backdrop-filter: none !important;
+                box-shadow: none;
+            }
+
+            .header {
+                background: #16a34a !important;
+                color: white !important;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            .content {
+                padding: 16px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .items-table {
+                font-size: 0.7em;
+            }
+            
+            .items-table th,
+            .items-table td {
+                padding: 6px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="{{ request.host_url }}static/images/logo1.png">
+                <p>SokoFresh</p>
+            </div>
+            <h1>Order Receipt</h1>
+            <p>Reference: {{ order.order_reference_number }}</p>
+        </div>
+        
+        <div class="content">
+            <!-- Order Information -->
+            <div class="section">
+                <div class="section-title">Order Information</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Order ID</div>
+                        <div class="info-value">#{{ order.order_id }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Order Date</div>
+                        <div class="info-value">{{ order.order_date.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Payment Method</div>
+                        <div class="info-value">{{ order.order_payment_method.title() }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Delivery Location</div>
+                        <div class="info-value">{{ order.order_drop_location }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customer Information -->
+            <div class="section">
+                <div class="section-title">Customer Information</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ order.buyer_name }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phone Number</div>
+                        <div class="info-value">{{ order.buyer_phone or 'Not provided' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ order.buyer_email }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="section">
+                <div class="section-title">Order Items</div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order_items %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.product_name }}</strong>
+                                {% if item.farmer_name %}
+                                <br><small style="color: #374151;">Farmer: {{ item.farmer_name }}</small>
+                                {% endif %}
+                                {% if item.farmer_farm_location %}
+                                <br><small style="color: #374151;">From: {{ item.farmer_farm_location }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.product_category or item.product_type or 'N/A' }}</td>
+                            <td>{{ item.total_quantity }} {{ item.product_unit or 'units' }}</td>
+                            <td>KSh {{ "%.2f"|format(item.order_unit_price) }}</td>
+                            <td>
+                                <span class="status-badge status-{{ item.order_item_status }}">
+                                    {{ item.order_item_status.title() }}
+                                </span>
+                            </td>
+                            <td><strong>KSh {{ "%.2f"|format(item.item_total) }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Order Total -->
+            <div class="total-section">
+                <div class="total-row">
+                    <span>Total Amount:</span>
+                    <span>KSh {{ "%.2f"|format(order_total) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="thank-you">Thank you for your order!</div>
+            <div class="company-info">
+                <p>Fresh Farm Connect - Connecting farmers directly to consumers</p>
+                <p>For support, contact us at support@sokofresh.com</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

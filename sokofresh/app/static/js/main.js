@@ -433,71 +433,103 @@ document.addEventListener('DOMContentLoaded', () => {
         orderSearchInput.addEventListener('input', filterOrders);
         orderStatusFilter.addEventListener('change', filterOrders);
 
+        // Listener for the order buttons
+        document.addEventListener("click", function (e) {
+            const button = e.target.closest(".order-btn[data-status-target]");
+            if (!button) return;
+
+            const newStatus = button.getAttribute("data-status-target");
+            const orderId = button.getAttribute("data-order-id");
+
+            if (newStatus && orderId) {
+                updateOrderStatus(button, newStatus, orderId);
+            }
+        });
+
         // Update order status
         function updateOrderStatus(button, newStatus) {
             const orderCard = button.closest('.order-card');
-            const statusBadge = orderCard.querySelector('.status-badge');
-            const actionsDiv = orderCard.querySelector('.order-actions');
-            
-            // Update status attribute
-            orderCard.setAttribute('data-status', newStatus);
-            
-            // Update status badge
-            statusBadge.className = `status-badge status-${newStatus}`;
-            
-            const statusTexts = {
-                'processing': 'Processing',
-                'ready': 'Ready for Pickup',
-                'completed': 'Completed',
-                'cancelled': 'Cancelled'
-            };
-            
-            statusBadge.textContent = statusTexts[newStatus] || 'Unknown';
-            
-            // Update action buttons based on new status
-            let newButtons = '';
-            
-            switch(newStatus) {
-                case 'processing':
-                    newButtons = `
-                        <button class="btn btn-ready" onclick="updateOrderStatus(this, 'ready')">Mark Ready</button>
-                        <button class="btn btn-cancel" onclick="updateOrderStatus(this, 'cancelled')">Cancel</button>
-                        <button class="btn btn-view">View Details</button>
-                    `;
-                    break;
-                case 'ready':
-                    newButtons = `
-                        <button class="btn btn-complete" onclick="updateOrderStatus(this, 'completed')">Mark Complete</button>
-                        <button class="btn btn-view">View Details</button>
-                    `;
-                    break;
-                case 'completed':
-                    newButtons = `
-                        <button class="btn btn-view">View Receipt</button>
-                    `;
-                    break;
-                case 'cancelled':
-                    newButtons = `
-                        <button class="btn btn-view">View Details</button>
-                    `;
-                    statusBadge.className = 'status-badge status-cancelled';
-                    break;
-            }
-            
-            actionsDiv.innerHTML = newButtons;
-            
-            // Update stats (simple increment/decrement)
-            updateStats();
-            
-            // Show confirmation
-            const confirmationMessages = {
-                'processing': 'Order accepted and moved to processing!',
-                'ready': 'Order marked as ready for pickup!',
-                'completed': 'Order completed successfully!',
-                'cancelled': 'Order cancelled.'
-            };
-            
-            alert(confirmationMessages[newStatus]);
+            const orderId = orderCard.getAttribute('data-order-id');
+            const orderItemId = orderCard.getAttribute('data-order-item-id');
+            console.log(orderItemId);
+
+            button.disabled = true;
+
+            fetch(`/farmer/update-order-status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrf_token')
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    order_item_id: orderItemId,
+                    new_status: newStatus
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update UI
+                    const statusBadge = orderCard.querySelector('.status-badge');
+                    const actionsDiv = orderCard.querySelector('.order-actions');
+
+                    orderCard.setAttribute('data-status', newStatus);
+                    statusBadge.className = `status-badge status-${newStatus}`;
+
+                    const statusTexts = {
+                        'processing': 'Processing',
+                        'ready': 'Ready for Pickup',
+                        'completed': 'Completed',
+                        'cancelled': 'Cancelled'
+                    };
+                    statusBadge.textContent = statusTexts[newStatus] || 'Unknown';
+
+                    // Remove order from DOM if needed
+                    if (['completed', 'cancelled'].includes(newStatus)) {
+                        orderCard.remove();
+                    } else {
+                        // Update buttons
+                        let newButtons = '';
+                        switch (newStatus) {
+                            case 'processing':
+                                // from 'new'
+                                newButtons = `
+                                    <button class="order-btn btn-ready" data-status-target="ready" data-order-id="${orderId}">Mark Ready</button>
+                                    <button class="order-btn btn-cancel" data-status-target="cancelled" data-order-id="${orderId}">Cancel</button>
+                                `;
+                                break;
+                            case 'ready':
+                                // from 'processing'
+                                newButtons = `
+                                    <button class="order-btn btn-complete" data-status-target="completed" data-order-id="${orderId}">Mark Complete</button>
+                                `;
+                                break;
+                            case 'completed':
+                                // from 'ready'
+                                newButtons = `
+                                    <button class="order-btn btn-view">View Receipt</button>
+                                `;
+                                break;
+                            default:
+                                newButtons = ""; // for cancelled or unknown
+                        }
+                        actionsDiv.innerHTML = newButtons;
+                    }
+
+                    updateStats();
+                    alert(data.message || 'Order updated!');
+                } else {
+                    alert(data.error || 'Failed to update order.');
+                }
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                alert('Something went wrong!');
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
         }
 
         // Update stats counters (simplified)
@@ -518,23 +550,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Update stat displays
-            document.querySelector('.stat-new').textContent = stats.new;
-            document.querySelector('.stat-processing').textContent = stats.processing;
-            document.querySelector('.stat-ready').textContent = stats.ready;
-            document.querySelector('.stat-completed').textContent = stats.completed;
+            document.querySelector('.order-stat-new').textContent = stats.new;
+            document.querySelector('.order-stat-processing').textContent = stats.processing;
+            document.querySelector('.order-stat-ready').textContent = stats.ready;
+            document.querySelector('.order-stat-completed').textContent = stats.completed;
         }
 
         // Initialize stats on page load
         updateStats();
-
-        // Handle view details/receipt buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.textContent === 'View Details' || e.target.textContent === 'View Receipt') {
-                const orderCard = e.target.closest('.order-card');
-                const orderId = orderCard.querySelector('h3').textContent;
-                alert(`Opening detailed view for ${orderId}`);
-            }
-        });
     }
 
     // Search and Filter functionality for listings 
@@ -735,13 +758,17 @@ function openProductModal(button) {
     document.getElementById('mpProductLocal').textContent = button.dataset.local || '';
     document.getElementById('mpProductDesc').textContent = button.dataset.desc || '';
     document.getElementById('mpProductPrice').textContent = button.dataset.price || '';
-    document.getElementById('mpProductQty').textContent = button.dataset.qty || '';
     document.getElementById('mpProductUnit').textContent = button.dataset.unit || '';
     document.getElementById('mpProductImage').src = button.dataset.img || '';
+
+    // Get the quantity for the modal
+    const productQty = button.dataset.qty;
+    document.getElementById('mpProductQty').textContent = productQty || '';
+    window.currentProductQty = parseInt(productQty);
     
     // Set the current product ID and restore its quantity
     const productId = button.dataset.id;
-    window.currentProductId = productId;
+    window.currentProductId = parseInt(productId);
     const savedQuantity = productQuantities[productId] || 1;
     document.getElementById('mpQtyInput').value = savedQuantity;
 
@@ -833,4 +860,41 @@ function updateQty(change) {
 }
 
 
+// Functions for creating cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
+
+// Date range picker functionality for sales report
+function updateDateRange() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    if (startDate && endDate) {
+        const url = new URL(window.location);
+        url.searchParams.set('start_date', startDate);
+        url.searchParams.set('end_date', endDate);
+        window.location.href = url.toString();
+    }
+}
+
+function generatePDF() {
+    window.print();
+}
+
+// Print styles
+window.addEventListener('beforeprint', function() {
+    document.body.style.backgroundColor = 'white';
+});

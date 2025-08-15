@@ -106,18 +106,22 @@ CREATE TABLE liked_products (
 
 CREATE TABLE orders (
     order_id SERIAL PRIMARY KEY,
-    order_buyer_id INTEGER REFERENCES users(id),
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    order_status VARCHAR(50) DEFAULT 'pending'  -- pending, accepted, delivered
+    order_buyer_id INTEGER REFERENCES users(user_id),
+    order_reference_number VARCHAR(20) UNIQUE NOT NULL,
+    order_drop_location VARCHAR(100) NOT NULL,
+    order_payment_method VARCHAR(50) NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE order_items (
     order_item_id SERIAL PRIMARY KEY,
-    order_item_order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
-    order_product_id INTEGER REFERENCES products(id),
+    order_item_order_id INTEGER REFERENCES orders(order_id) ON DELETE CASCADE,
+    order_product_id INTEGER REFERENCES products(product_id),
     order_quantity INTEGER NOT NULL,
-    order_unit_price DECIMAL(10, 2) NOT NULL
+    order_unit_price DECIMAL(10, 2) NOT NULL,
+    order_item_status VARCHAR(50) DEFAULT 'pending'  -- pending, confirmed, cancelled, delivered
 );
+
 
 
 CREATE TABLE product_categories (

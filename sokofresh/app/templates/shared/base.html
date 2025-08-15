@@ -49,10 +49,12 @@
                         {% endif %}
                         <div class="dropdown-menu">
                             <div class="dropdown-item">Hi, {{ user.name }}</div>
-                            <a href="{{ url_for('buyers.settings') }}" class="dropdown-item"><i class="fa fa-cog" style="margin-right: .3rem;"></i>Settings</a>
                             {% if 'farmer' in user.roles and 'buyer' in user.roles %}
-                            <a href="#" class="dropdown-item"><i class="fa fa-refresh" style="margin-right: .3rem;"></i>Switch Role</a>
-                        {% endif %}
+                                <a href="#" class="dropdown-item"><i class="fa fa-refresh" style="margin-right: .3rem;"></i>Switch Role</a>
+                            {% elif 'buyer' in user.roles and not 'farmer' in user.roles %}
+                                <a href="/marketplace/saved" class="dropdown-item"><i class="fa fa-heart" style="margin-right: .3rem;"></i>Saved Products</a>
+                            {% endif %}
+                            <a href="{{ url_for('buyers.settings') }}" class="dropdown-item"><i class="fa fa-cog" style="margin-right: .3rem;"></i>Settings</a>
                             <a href="{{ url_for('auth.logout') }}" class="dropdown-item"><i class="fa fa-sign-out" style="margin-right: .3rem;"></i>Logout</a>
                         </div>
                     </div>
@@ -70,18 +72,42 @@
                 <button class="cart-btn" onclick="toggleCart()">
                     <i class="fa fa-shopping-cart"></i>
                     <span class="cart-count">0</span>
-                    <span style="font-size: 16px;">Ksh 0.00</span>
+                    <span id="cartTotal" style="font-size: 16px;">Ksh 0.00</span>
                 </button>
 
                 <div id="cartPanel" class="cart-panel">
                     <h5>Your Cart</h5>
+
+                    <!-- Cart Items -->
                     <div id="cartItems"></div>
 
+                    <!-- Cart Total -->
                     <div class="cart-summary">
-                        <strong>Total:</strong> <span id="cartTotal">Ksh 0.00</span>
+                        <strong>Total:</strong> <span id="cartTotalSummary">Ksh 0.00</span>
                     </div>
 
-                    <!-- Optional checkout button (disabled for unauthenticated users) -->
+                    <!-- Drop Location & Payment Method -->
+                    <div class="form-group mt-3">
+                        <label for="buyer-drop-location"><strong>Drop Location</strong></label>
+                        <select id="buyer-drop-location" class="form-control custom-input">
+                            <option value="">-- Select Drop Location --</option>
+                            <option value="Gikambura">Gikambura</option>
+                            <option value="Zambezi">Zambezi</option>
+                            <option value="Limuru Town">Limuru Town</option>
+                            <option value="Wangige">Wangige</option>
+                            <option value="Koja">Koja</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label><strong>Payment Method</strong></label>
+                        <div class="payment-options">
+                            <label><input type="radio" name="payment-method" value="mpesa"> M-Pesa</label>
+                            <label><input type="radio" name="payment-method" value="cash"> Cash on Delivery</label>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Button -->
                     <button id="checkoutBtn" class="btn btn-primary mt-3" onclick="checkoutCart()">
                         Proceed to Checkout
                     </button>
@@ -103,25 +129,15 @@
 
                     {% if is_buyer and not is_farmer %}
                         <li class="nav-item"><a href="/my-orders" class="nav-link">My Orders</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Order History</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Saved Products</a></li>
+                        <li class="nav-item"><a href="/purchase-report" class="nav-link">Get Report</a></li>
                     {% endif %}
 
                     {% if is_farmer %}
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" id="farmerDropdown" role="button">
-                                Farmer Dashboard
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="farmerDropdown">
-                                <li><a class="dropdown-item" href="/farmer/dashboard">Dashboard Overview</a></li>
-                                <li><a class="dropdown-item" href="/farmer/post-product">Post Product</a></li>
-                                <li><a class="dropdown-item" href="/farmer/listings">My Listings</a></li>
-                                <li><a class="dropdown-item" href="/farmer/orders">Orders Received</a></li>
-                                <li><a class="dropdown-item" href="#">Inventory Management</a></li>
-                                <li><a class="dropdown-item" href="/farmer/sales-report">Sales Report</a></li>
-                                <li><a class="dropdown-item" href="#">Payouts</a></li>
-                            </ul>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="/farmer/dashboard">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/farmer/post-product">Post Product</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/farmer/listings">My Products</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/farmer/orders">Orders Received</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/farmer/sales-report">Sales Report</a></li>
                     {% endif %}
 
                     <li class="nav-item"><a href="/support" class="nav-link">Support</a></li>
@@ -201,9 +217,6 @@
 
     <!-- Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- Chart -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <!-- My JS files -->
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>

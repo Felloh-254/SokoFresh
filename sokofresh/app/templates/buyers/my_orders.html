@@ -1,377 +1,412 @@
 {% extends "shared/base.html" %}
 {% block content %}
-    <div class="order-container">
-        <!-- Order Statistics -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">12</div>
-                <div class="stat-label">Total Orders</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">3</div>
-                <div class="stat-label">Active Orders</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">Ksh 24,750</div>
-                <div class="stat-label">Total Spent</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">95%</div>
-                <div class="stat-label">Satisfaction Rate</div>
-            </div>
+<div class="order-container">
+    <!-- Order Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_orders|default(0) }}</div>
+            <div class="stat-label">Total Orders</div>
         </div>
-
-        <!-- Filters -->
-        <div class="filters-section">
-            <div class="filters-grid">
-                <div class="filter-group">
-                    <label>Order Status</label>
-                    <select id="statusFilter">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Date Range</label>
-                    <select id="dateFilter">
-                        <option value="">All Time</option>
-                        <option value="7">Last 7 Days</option>
-                        <option value="30">Last 30 Days</option>
-                        <option value="90">Last 3 Months</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Search Orders</label>
-                    <input type="text" placeholder="Order ID or product name..." id="searchInput">
-                </div>
-                <div class="filter-group">
-                    <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
-                </div>
-            </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ active_orders|default(0) }}</div>
+            <div class="stat-label">Active Orders</div>
         </div>
-
-        <!-- Orders List -->
-        <div class="orders-container" id="ordersContainer">
-            <!-- Order 1 - Delivered -->
-            <div class="order-card" data-status="delivered">
-                <div class="order-header">
-                    <div class="order-info">
-                        <div class="order-id">Order #SF-2025-001</div>
-                        <div class="order-date">Placed on June 28, 2025</div>
-                    </div>
-                    <div class="order-status status-delivered">Delivered</div>
-                </div>
-                <div class="order-body">
-                    <div class="order-items">
-                        <div class="order-item">
-                            <div class="item-image">🥑</div>
-                            <div class="item-details">
-                                <div class="item-name">Hass Avocados</div>
-                                <div class="item-quantity">2 kg</div>
-                            </div>
-                            <div class="item-price">Ksh 300</div>
-                        </div>
-                        <div class="order-item">
-                            <div class="item-image">🥬</div>
-                            <div class="item-details">
-                                <div class="item-name">Sukuma Wiki</div>
-                                <div class="item-quantity">3 bunches</div>
-                            </div>
-                            <div class="item-price">Ksh 150</div>
-                        </div>
-                        <div class="order-item">
-                            <div class="item-image">🍅</div>
-                            <div class="item-details">
-                                <div class="item-name">Fresh Tomatoes</div>
-                                <div class="item-quantity">1.5 kg</div>
-                            </div>
-                            <div class="item-price">Ksh 225</div>
-                        </div>
-                    </div>
-                    <div class="order-summary">
-                        <div class="summary-row">
-                            <span>Subtotal:</span>
-                            <span>Ksh 675</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Delivery Fee:</span>
-                            <span>Ksh 100</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Total:</span>
-                            <span>Ksh 775</span>
-                        </div>
-                    </div>
-                    <div class="order-actions">
-                        <button class="btn btn-small btn-reorder" onclick="reorderItems('SF-2025-001')">Reorder</button>
-                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="downloadReceipt('SF-2025-001')">Receipt</button>
-                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="rateOrder('SF-2025-001')">Rate Order</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order 2 - Processing with Tracking -->
-            <div class="order-card" data-status="processing">
-                <div class="order-header">
-                    <div class="order-info">
-                        <div class="order-id">Order #SF-2025-002</div>
-                        <div class="order-date">Placed on June 29, 2025</div>
-                    </div>
-                    <div class="order-status status-processing">Processing</div>
-                </div>
-                <div class="order-body">
-                    <div class="order-items">
-                        <div class="order-item">
-                            <div class="item-image">🍌</div>
-                            <div class="item-details">
-                                <div class="item-name">Sweet Bananas</div>
-                                <div class="item-quantity">2 bunches</div>
-                            </div>
-                            <div class="item-price">Ksh 200</div>
-                        </div>
-                        <div class="order-item">
-                            <div class="item-image">🌿</div>
-                            <div class="item-details">
-                                <div class="item-name">Fresh Spinach</div>
-                                <div class="item-quantity">2 bunches</div>
-                            </div>
-                            <div class="item-price">Ksh 120</div>
-                        </div>
-                    </div>
-                    
-                    <div class="tracking-progress">
-                        <h4 style="margin-bottom: 15px; color: #2E7D32;">Order Tracking</h4>
-                        <div class="progress-steps">
-                            <div class="progress-line">
-                                <div class="progress-line-active"></div>
-                            </div>
-                            <div class="progress-step completed">1</div>
-                            <div class="progress-step completed">2</div>
-                            <div class="progress-step active">3</div>
-                            <div class="progress-step">4</div>
-                            <div class="progress-step">5</div>
-                        </div>
-                        <div class="step-labels">
-                            <div class="step-label">Order Placed</div>
-                            <div class="step-label">Confirmed</div>
-                            <div class="step-label active">Processing</div>
-                            <div class="step-label">Shipped</div>
-                            <div class="step-label">Delivered</div>
-                        </div>
-                    </div>
-
-                    <div class="order-summary">
-                        <div class="summary-row">
-                            <span>Subtotal:</span>
-                            <span>Ksh 320</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Delivery Fee:</span>
-                            <span>Ksh 100</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Total:</span>
-                            <span>Ksh 420</span>
-                        </div>
-                    </div>
-                    <div class="order-actions">
-                        <button class="btn btn-small btn-track" onclick="trackOrder('SF-2025-002')">Track Order</button>
-                        <button class="btn btn-small btn-cancel" onclick="cancelOrder('SF-2025-002')">Cancel Order</button>
-                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="contactSupport('SF-2025-002')">Contact Support</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order 3 - Pending -->
-            <div class="order-card" data-status="pending">
-                <div class="order-header">
-                    <div class="order-info">
-                        <div class="order-id">Order #SF-2025-003</div>
-                        <div class="order-date">Placed on June 29, 2025</div>
-                    </div>
-                    <div class="order-status status-pending">Pending</div>
-                </div>
-                <div class="order-body">
-                    <div class="order-items">
-                        <div class="order-item">
-                            <div class="item-image">🥕</div>
-                            <div class="item-details">
-                                <div class="item-name">Fresh Carrots</div>
-                                <div class="item-quantity">1 kg</div>
-                            </div>
-                            <div class="item-price">Ksh 120</div>
-                        </div>
-                        <div class="order-item">
-                            <div class="item-image">🧅</div>
-                            <div class="item-details">
-                                <div class="item-name">Red Onions</div>
-                                <div class="item-quantity">0.5 kg</div>
-                            </div>
-                            <div class="item-price">Ksh 80</div>
-                        </div>
-                    </div>
-                    <div class="order-summary">
-                        <div class="summary-row">
-                            <span>Subtotal:</span>
-                            <span>Ksh 200</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Delivery Fee:</span>
-                            <span>Ksh 100</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Total:</span>
-                            <span>Ksh 300</span>
-                        </div>
-                    </div>
-                    <div class="order-actions">
-                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="editOrder('SF-2025-003')">Edit Order</button>
-                        <button class="btn btn-small btn-cancel" onclick="cancelOrder('SF-2025-003')">Cancel Order</button>
-                    </div>
-                </div>
-            </div>
+        <div class="stat-card">
+            <div class="stat-value">Ksh {{ "%.2f"|format(total_spent|default(0)) }}</div>
+            <div class="stat-label">Total Spent</div>
         </div>
-
-        <!-- Empty State (hidden by default) -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <div class="empty-state-icon">📦</div>
-            <h3>No orders found</h3>
-            <p>You haven't placed any orders yet or no orders match your current filters.</p>
-            <button class="btn" onclick="window.location.href='/marketplace'">Start Shopping</button>
+        <div class="stat-card">
+            <div class="stat-value">{{ "%.1f"|format(satisfaction_rate|default(0)) }}%</div>
+            <div class="stat-label">Satisfaction Rate</div>
         </div>
     </div>
 
-    <!-- Modal for Order Details -->
-    <div id="orderModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div id="modalContent">
-                <!-- Modal content will be populated by JavaScript -->
+    <!-- Filters -->
+    <div class="filters-section">
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label>Order Status</label>
+                <select id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="processing">Processing</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Date Range</label>
+                <select id="dateFilter" onchange="applyFilters()">
+                    <option value="">All Time</option>
+                    <option value="7">Last 7 Days</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 3 Months</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Search Orders</label>
+                <input type="text" placeholder="Order ID or product name..." id="searchInput" onkeyup="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
             </div>
         </div>
     </div>
+    
+    <!-- Orders List -->
+    <div class="orders-container" id="ordersContainer">
+        {% for order in customer_orders %}
+        <div class="order-card" data-status="{{ order.status|default('pending')|lower }}" 
+         data-date="{{ order.order_date.split('T')[0] if order.order_date else '' }}">
+            <div class="order-header">
+                <div class="order-info">
+                    <div class="order-id">Order #{{ order.order_reference_number|default('N/A') }}</div>
+                    <div class="order-date">
+                        {% if order.order_date %}
+                            Placed on {{ order.order_date }}
+                        {% else %}
+                            Date not available
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="order-status status-{{ order.status|default('pending')|lower }}">
+                    {{ order.status|default('Pending')|title }}
+                </div>
+            </div>
+            
+            <div class="order-body">
+                <div class="order-items">
+                    {% if order.items %}
+                        {% for item in order["items"] %}
+                        <div class="order-item" id="order-item">
+                            {% if order.status == 'pending' %}
+                                <span class="cancel-item" id="cancel-item" data-order-item-id="{{ order.order_item_id }}" data-order-id="{{ order.order_id }}">&times</span>
+                            {% endif %}
+                            <img class="item-image" src="{{ item.emoji|default('/static/images/logo1.png') }}">
+                            <div class="item-details">
+                                <div class="item-name">{{ item.product_name|default('Unknown Product') }}</div>
+                                <div class="item-quantity">{{ item.quantity|default(1) }} {{ item.unit|default('pcs') }}</div>
+                            </div>
+                            <div class="item-price">Ksh {{ "%.2f"|format((item.unit_price|default(0)) * (item.quantity|default(1))) }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Fallback if items JSON is not available -->
+                        <div class="order-item">
+                            <div class="item-image">🛒</div>
+                            <div class="item-details">
+                                <div class="item-name">{{ order.product_names|default('Order Details') }}</div>
+                                <div class="item-quantity">{{ order.total_quantity|default('N/A') }} items</div>
+                            </div>
+                            <div class="item-price">Ksh {{ "%.2f"|format(order.subtotal|default(0)) }}</div>
+                        </div>
+                    {% endif %}
+                </div>
 
-    <script>
-        // Filter functionality
-        function applyFilters() {
-            const statusFilter = document.getElementById('statusFilter').value;
-            const dateFilter = document.getElementById('dateFilter').value;
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>Ksh {{ "%.2f"|format(order.subtotal|default(0)) }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Fee:</span>
+                        <span>Ksh {{ "%.2f"|format(order.delivery_fee|default(0)) }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total:</span>
+                        <span>Ksh {{ "%.2f"|format(order.total_amount|default(0)) }}</span>
+                    </div>
+                </div>
+
+                <div class="order-actions">
+                    {% set order_status = order.status|default('pending')|lower %}
+                    {% if order_status == 'delivered' or order_status == 'completed' %}
+                        <button class="btn btn-small order-btn-secondary btn-secondary">
+                            <a href="/buyers/receipt/{{ order.order_id }}" target="_blank" class="order-btn">View Receipt</a>
+                        </button>
+                        <button class="btn btn-small order-btn-secondary btn-secondary">
+                            <a href="/buyers/receipt/{{ order.order_id }}/pdf" class="order-btn">Download PDF</a>
+                        </button>
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="rateOrder('{{ order.order_reference_number }}')"> <a href="#" class="order-btn">Rate Order</a></button>
+                    {% elif order_status == 'confirmed' %}
+                        <button class="btn btn-small btn-track" onclick="trackOrder('{{ order.order_reference_number }}')">Track Order</button>
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="contactSupport('{{ order.order_reference_number }}')">Contact Support</button>
+                    {% elif order_status == 'pending' %}
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="editOrder('{{ order.order_reference_number }}')">Edit Order</button>
+                        <button class="btn btn-small btn-cancel" onclick="cancelOrder('{{ order.order_reference_number }}')">Cancel Order</button>
+                    {% elif order_status == 'cancelled' %}
+                        <button class="btn btn-small btn-reorder" onclick="reorderItems('{{ order.order_reference_number }}')">Reorder</button>
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="contactSupport('{{ order.order_reference_number }}')">Contact Support</button>
+                    {% else %}
+                        <button class="btn btn-small order-btn-secondary btn-secondary" onclick="contactSupport('{{ order.order_reference_number }}')">Contact Support</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not customer_orders or customer_orders|length == 0 %}
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">📦</div>
+        <h3>No orders found</h3>
+        <p>You haven't placed any orders yet or no orders match your current filters.</p>
+        <button class="btn" onclick="window.location.href='/marketplace'">Start Shopping</button>
+    </div>
+    {% endif %}
+</div>
+
+<script>    
+    // Order actions with real API calls
+    function trackOrder(orderId) {
+        fetch(`/buyers/order/${orderId}/track`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showModal(`
+                        <h2>Track Order ${orderId}</h2>
+                        <div class="tracking-progress">
+                            <p><strong>Status:</strong> ${data.data.status || 'Processing'}</p>
+                            <p><strong>Estimated Delivery:</strong> ${data.data.estimated_delivery || 'To be determined'}</p>
+                            <p><strong>Delivery Address:</strong> ${data.data.delivery_address || 'Not specified'}</p>
+                            ${data.data.driver_info ? `<p><strong>Driver:</strong> ${data.data.driver_info}</p>` : ''}
+                            <div style="margin-top: 20px;">
+                                ${data.data.driver_info ? '<button class="btn">Call Driver</button>' : ''}
+                                <button class="btn order-btn-secondary btn-secondary" style="margin-left: 10px;">Update Address</button>
+                            </div>
+                        </div>
+                    `);
+                } else {
+                    alert('Unable to track order: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error tracking order. Please try again.');
+            });
+    }
+
+    function reorderItems(orderId) {
+        if (confirm(`Add items from order ${orderId} to your cart?`)) {
+            fetch(`/buyers/order/${orderId}/reorder`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Items added to cart successfully!');
+                    window.location.href = '/cart';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding items to cart. Please try again.');
+            });
+        }
+    }
+
+    cancelOrderBtns = document.querySelectorAll('#cancel-item');
+
+    cancelOrderBtns.forEach(cancelOrderBtn => {
+        cancelOrderBtn.addEventListener('click', function() {
+            const orderId = cancelOrderBtn.getAttribute('data-order-id');
+            const orderItemId = cancelOrderBtn.getAttribute('data-order-item-id');
+            cancelOrder(orderId, orderItemId);
+        });
+    })
+
+
+    function cancelOrder(orderId, orderItemId) {
+        console.log(orderItemId);
+        if (confirm(`Are you sure you want to cancel order ${orderId}?`)) {
+            fetch(`/buyers/orders/${orderId}/cancel/${orderItemId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order cancelled successfully. You will receive a refund within 3-5 business days.');
+                    location.reload();
+                } else {
+                    alert('Error cancelling order: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error cancelling order. Please try again.');
+            });
+        }
+    }
+
+    function downloadReceipt(orderId) {
+        window.open(`/buyers/order/${orderId}/receipt`, '_blank');
+    }
+
+    function rateOrder(orderId) {
+        showModal(`
+            <h2>Rate Your Order</h2>
+            <p>How was your experience with order ${orderId}?</p>
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="font-size: 2rem; margin-bottom: 15px;" id="starRating">
+                    <span onclick="setRating(1)" style="cursor: pointer;" data-rating="1">⭐</span>
+                    <span onclick="setRating(2)" style="cursor: pointer;" data-rating="2">⭐</span>
+                    <span onclick="setRating(3)" style="cursor: pointer;" data-rating="3">⭐</span>
+                    <span onclick="setRating(4)" style="cursor: pointer;" data-rating="4">⭐</span>
+                    <span onclick="setRating(5)" style="cursor: pointer;" data-rating="5">⭐</span>
+                </div>
+                <textarea id="reviewText" placeholder="Tell us about your experience..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;" rows="4"></textarea>
+                <button class="btn" onclick="submitRating('${orderId}')">Submit Review</button>
+            </div>
+        `);
+    }
+
+    function setRating(rating) {
+        window.selectedRating = rating;
+        const stars = document.querySelectorAll('#starRating span');
+        stars.forEach((star, index) => {
+            star.style.opacity = index < rating ? '1' : '0.3';
+        });
+    }
+
+    function submitRating(orderId) {
+        const rating = window.selectedRating || 5;
+        const comment = document.getElementById('reviewText').value;
+        
+        fetch(`/buyers/order/${orderId}/rate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                rating: rating,
+                comment: comment
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Thank you for your review!');
+                closeModal();
+            } else {
+                alert('Error submitting review: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error submitting review. Please try again.');
+        });
+    }
+
+    function editOrder(orderId) {
+        window.location.href = `/buyers/order/${orderId}/edit`;
+    }
+
+    function contactSupport(orderId) {
+        window.location.href = `/support?order=${orderId}`;
+    }
+
+    // Filter functionality
+    function applyFilters() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        
+        const orderCards = document.querySelectorAll('.order-card');
+        let visibleOrders = 0;
+        
+        orderCards.forEach(card => {
+            let showCard = true;
             
-            const orderCards = document.querySelectorAll('.order-card');
-            let visibleOrders = 0;
+            // Status filter
+            if (statusFilter && card.dataset.status !== statusFilter) {
+                showCard = false;
+            }
             
-            orderCards.forEach(card => {
-                let showCard = true;
+            // Date filter
+            if (dateFilter && card.dataset.date) {
+                const orderDate = new Date(card.dataset.date);
+                const now = new Date();
+                let withinRange = false;
                 
-                // Status filter
-                if (statusFilter && !card.dataset.status.includes(statusFilter)) {
+                switch(dateFilter) {
+                    case 'today':
+                        withinRange = orderDate.toDateString() === now.toDateString();
+                        break;
+                    case 'week':
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        withinRange = orderDate >= weekAgo;
+                        break;
+                    case 'month':
+                        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                        withinRange = orderDate >= monthAgo;
+                        break;
+                    case 'year':
+                        withinRange = orderDate.getFullYear() === now.getFullYear();
+                        break;
+                }
+                
+                if (!withinRange) {
                     showCard = false;
                 }
-                
-                // Search filter
-                if (searchInput) {
-                    const orderText = card.textContent.toLowerCase();
-                    if (!orderText.includes(searchInput)) {
-                        showCard = false;
-                    }
-                }
-                
-                if (showCard) {
-                    card.style.display = 'block';
-                    visibleOrders++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+            }
             
-            // Show empty state if no orders match
-            const emptyState = document.getElementById('emptyState');
-            if (visibleOrders === 0) {
-                emptyState.style.display = 'block';
+            // Search filter
+            if (searchInput) {
+                const orderText = card.textContent.toLowerCase();
+                if (!orderText.includes(searchInput)) {
+                    showCard = false;
+                }
+            }
+            
+            if (showCard) {
+                card.style.display = 'block';
+                visibleOrders++;
             } else {
-                emptyState.style.display = 'none';
+                card.style.display = 'none';
             }
+        });
+        
+        // Show empty state if no orders match
+        const emptyState = document.getElementById('emptyState');
+        
+        if (visibleOrders === 0) {
+            emptyState.style.display = 'block';
+            emptyState.querySelector('p').textContent = 'No orders match your current filters.';
+        } else {
+            emptyState.style.display = 'none';
         }
+    }
 
-        // Order actions
-        function trackOrder(orderId) {
-            showModal(`
-                <h2>Track Order ${orderId}</h2>
-                <div class="tracking-progress">
-                    <p><strong>Estimated Delivery:</strong> June 30, 2025 (Tomorrow)</p>
-                    <p><strong>Delivery Address:</strong> Kiambu Road, Nairobi</p>
-                    <p><strong>Driver:</strong> John Kamau (+254712345678)</p>
-                    <div style="margin-top: 20px;">
-                        <button class="btn">Call Driver</button>
-                        <button class="btn order-btn-secondary btn-secondary" style="margin-left: 10px;">Update Address</button>
-                    </div>
-                </div>
-            `);
+    // Utility functions for modal
+    function showModal(content) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                ${content}
+            </div>
+        `;
+        document.body.appendChild(modal);
+        window.currentModal = modal;
+    }
+
+    function closeModal() {
+        if (window.currentModal) {
+            document.body.removeChild(window.currentModal);
+            window.currentModal = null;
         }
-
-        function reorderItems(orderId) {
-            alert(`Reordering items from ${orderId}. Redirecting to cart...`);
-            // In a real app, this would add items to cart
-        }
-
-        function cancelOrder(orderId) {
-            if (confirm(`Are you sure you want to cancel order ${orderId}?`)) {
-                alert(`Order ${orderId} has been cancelled. You will receive a full refund within 3-5 business days.`);
-                // In a real app, this would update the order status
-            }
-        }
-
-        function downloadReceipt(orderId) {
-            alert(`Downloading receipt for order ${orderId}...`);
-            // In a real app, this would download a PDF receipt
-        }
-
-        function rateOrder(orderId) {
-            showModal(`
-                <h2>Rate Your Order</h2>
-                <p>How was your experience with order ${orderId}?</p>
-                <div style="text-align: center; margin: 20px 0;">
-                    <div style="font-size: 2rem; margin-bottom: 15px;">
-                        <span onclick="setRating(1)" style="cursor: pointer;">⭐</span>
-                        <span onclick="setRating(2)" style="cursor: pointer;">⭐</span>
-                        <span onclick="setRating(3)" style="cursor: pointer;">⭐</span>
-                        <span onclick="setRating(4)" style="cursor: pointer;">⭐</span>
-                        <span onclick="setRating(5)" style="cursor: pointer;">⭐</span>
-                    </div>
-                    <textarea placeholder="Tell us about your experience..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;" rows="4"></textarea>
-                    <button class="btn">Submit Review</button>
-                </div>
-            `);
-        }
-
-        function editOrder(orderId) {
-            alert(`Editing order ${orderId}. Redirecting to edit page...`);
-            // In a real app, this would redirect to an edit form
-        }
-
-        function contactSupport(orderId) {
-            showModal(`
-                <h2>Contact Support</h2>
-                <p>Need help with order ${orderId}?</p>
-                <div style="margin: 20px 0;">
-                    <div style="margin-bottom: 15px;">
-                        <strong>📞 Phone Support:</strong><br>
-                        +254740448956 (24/7)
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <strong>📧 Email Support:</strong><br>
-                        support@sokofresh.com
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <strong>💬 Live Chat:</strong><br>
-                        <button`)
-    </script>
-
-
+    }
+</script>
 {% endblock %}

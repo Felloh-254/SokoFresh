@@ -34,53 +34,61 @@ def verified_required(view_func):
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-	if request.is_json:
-		data = request.get_json()
-		email = data.get("user_email")
-		password = data.get("user_password")
+    if request.is_json:
+        data = request.get_json()
+        email = data.get("user_email")
+        password = data.get("user_password")
 
-		conn = get_db_connection()
-		if not conn:
-			return jsonify({"message": "Database connection failed!"}), 400
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({"message": "Database connection failed!"}), 400
 
-		try:
-			cur = conn.cursor()
-			cur.execute(
-			'''SELECT user_id, user_password, user_email, user_full_name, user_profile_picture
-			FROM users
-			WHERE user_email = %s''',
-			(email,))
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                '''SELECT user_id, user_password, user_email, user_full_name, user_profile_picture
+                   FROM users
+                   WHERE user_email = %s''',
+                (email,)
+            )
+            user_data = cur.fetchone()
 
-			user_data = cur.fetchone()
+            # If user not found or password is null
+            if not user_data or not user_data[1]:
+                return jsonify({"message": "Invalid email or password!"}), 400
 
+            if not check_password_hash(user_data[1], password):
+                return jsonify({"message": "Invalid email or password!"}), 400
 
-			if not user_data[1]:
-				return jsonify({"message": "Error during Login! Please Try Again Later"}), 400
+            # Fetch user roles after successful password check
+            cur.execute(
+                "SELECT user_role_role_id FROM user_roles WHERE user_role_user_id = %s",
+                (user_data[0],)
+            )
+            user_roles = [role[0] for role in cur.fetchall()]
 
-			cur.execute("SELECT user_role_role_id FROM user_roles WHERE user_role_user_id = %s", (user_data[0],))
-			user_roles = [role[0] for role in cur.fetchall()]
+            if not user_roles:
+                return jsonify({"message": "No role assigned. Please contact support!"}), 400
 
-			if not user_roles:
-				return jsonify({"message": "Error fetching your role. Please contact support team!"}), 400
+            # Log the user in
+            user_id = user_data[0]
+            user = User(user_id, user_data[2], user_data[3], user_data[4])
+            login_user(user, remember=True)
 
-			if user_data and user_roles and check_password_hash(user_data[1], password):
-				# Convert tuple to User object
-				user = User(user_data[0], user_data[2], user_data[3], user_data[4])
-				login_user(user, remember=True)
+            # Redirect based on role
+            if 2 in user_roles:
+                return jsonify({"redirect_url": "/farmer/dashboard"})
+            elif 1 in user_roles:
+                return jsonify({"redirect_url": "/marketplace"})
+            else:
+                return jsonify({"message": "Unknown role. Please contact support!"}), 400
 
-				if 2 in user_roles:
-				    return jsonify({"redirect_url": "/"})
-				elif 1 in user_roles:
-				    return jsonify({"redirect_url": "/marketplace"})
-				else:
-					return jsonify({"message": "An error occurred. Please contact support team"})
+        finally:
+            cur.close()
+            release_db_connection(conn)
 
-			return jsonify({"message": "Invalid email or password!"}), 400
+    return render_template('/shared/login.html', user=current_user)
 
-		finally:
-			cur.close()
-			release_db_connection(conn)
-	return render_template('/shared/login.html', user = current_user)
 
 
 # Signup function
@@ -265,7 +273,7 @@ def google_callback():
 		login_user(user, remember=True)
 
 		if 2 in user_roles:
-		    return redirect(url_for("buyers.home"))
+		    return redirect(url_for("farmers.farmers_dashboard"))
 		elif 1 in user_roles:
 		    return redirect(url_for("buyers.marketplace"))
 

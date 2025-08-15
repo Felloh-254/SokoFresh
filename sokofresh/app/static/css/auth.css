@@ -16,6 +16,30 @@ body.modal-open {
     padding-right: 0 !important;
 }
 
+.home-btn {
+    position: absolute;
+    font-size: 18px;
+    font-weight: normal;
+    font-family: Tahoma;
+    text-transform: capitalize;
+    color: #000000;
+    padding: .6rem 1rem;
+    border-radius: 5px;
+    border: 1px solid #28a745;
+    background: #28a745;
+    top: 3%;
+    float: right;
+    right: 2%;
+}
+
+.home-btn:hover {
+    background: #ffffff;
+    transition: .2s;
+    border: 1px solid #28a745;
+    text-decoration: none;
+    color: #000000;
+}
+
 
 .login-section {
     background: #fff;

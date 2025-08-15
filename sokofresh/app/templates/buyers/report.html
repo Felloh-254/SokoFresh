@@ -1,0 +1,532 @@
+{% extends "shared/base.html" %}
+{% block content %}
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-break { page-break-before: always; }
+            body { background-color: white !important; }
+        }
+
+        .card {
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .farmer-card {
+            transition: all 0.3s ease;
+        }
+
+        .farmer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 50rem;
+            font-size: 0.75rem;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <!-- Header Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-2">Purchase Report</h1>
+                        <p class="text-muted mb-1">{{ user.user_full_name }}</p>
+                        <p class="text-muted small mb-1">{{ start_date }} - {{ end_date }}</p>
+                        <p class="text-muted small">Generated on {{ generated_date }}</p>
+                    </div>
+                    <div class="no-print">
+                        <a href="{{ url_for('buyers.download_purchase_report', start_date=request.args.get('start_date'), end_date=request.args.get('end_date')) }}" 
+                           class="btn btn-primary me-2">
+                            <i class="fa fa-download me-2"></i>Download PDF
+                        </a>
+                        <button onclick="window.print()" class="btn btn-secondary">
+                            <i class="fa fa-print me-2"></i>Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPIs Section -->
+        <div class="row mb-4">
+            <!-- Total Spending -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon bg-green-100 text-green-600 me-3">
+                                <i class="fa fa-coin fa-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="h6 text-muted mb-1">Total Spending</h3>
+                                <p class="h4 mb-1">KSh {{ "{:,.2f}".format(kpis.total_spending) }}</p>
+                                <p class="small mb-0 {% if kpis.spending_change >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    <i class="fa fa-arrow-{% if kpis.spending_change >= 0 %}up{% else %}down{% endif %} me-1"></i>
+                                    {{ "{:.1f}".format(abs(kpis.spending_change)) }}% from last month
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Orders -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon bg-blue-100 text-blue-600 me-3">
+                                <i class="fa fa-shopping-bag fa-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="h6 text-muted mb-1">Total Orders</h3>
+                                <p class="h4 mb-1">{{ kpis.total_orders }}</p>
+                                <p class="small mb-0 {% if kpis.orders_change >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    <i class="fa fa-arrow-{% if kpis.orders_change >= 0 %}up{% else %}down{% endif %} me-1"></i>
+                                    {{ "{:.1f}".format(abs(kpis.orders_change)) }}% from last month
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Order Value -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon bg-purple-100 text-purple-600 me-3">
+                                <i class="fa fa-chart-line fa-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="h6 text-muted mb-1">Avg Order Value</h3>
+                                <p class="h4 mb-1">KSh {{ "{:,.2f}".format(kpis.avg_order_value) }}</p>
+                                <p class="small mb-0 {% if kpis.avg_order_change >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    <i class="fa fa-arrow-{% if kpis.avg_order_change >= 0 %}up{% else %}down{% endif %} me-1"></i>
+                                    {{ "{:.1f}".format(abs(kpis.avg_order_change)) }}% from last month
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unique Farmers -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon bg-yellow-100 text-yellow-600 me-3">
+                                <i class="fa fa-users fa-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="h6 text-muted mb-1">Farmers Supported</h3>
+                                <p class="h4 mb-1">{{ kpis.unique_farmers }}</p>
+                                <p class="small text-muted mb-0">Different farmers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spending Charts -->
+        <div class="dashboard-container">
+            <div class="chart-section">
+                <h2 class="section-title">Purchase Trend</h2>
+
+                <!-- Charts Grid -->
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <h3>📊 Daily Purchase Trend (Ksh)</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="dailySpendingChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>🏷️ Spending by Category (Ksh)</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="h5 mb-3">Your Most Purchased Products</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Total Spent</th>
+                                <th>Orders</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in top_products %}
+                            <tr>
+                                <td>{{ product.product_name }}</td>
+                                <td>{{ product.category }}</td>
+                                <td>{{ product.total_quantity }} {{ product.product_unit }}</td>
+                                <td>KSh {{ "{:,.2f}".format(product.total_spent) }}</td>
+                                <td>{{ product.order_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorite Farmers Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="h5 mb-3">Your Favorite Farmers</h3>
+                <div class="row">
+                    {% for farmer in favorite_farmers %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card farmer-card h-100">
+                            <div class="card-body">
+                                <h4 class="h6 mb-1">{{ farmer.farmer_name }}</h4>
+                                <p class="small text-muted mb-2">{{ farmer.farmer_farm_location }}</p>
+                                <ul class="list-unstyled small mb-0">
+                                    <li class="mb-1"><strong>Total Orders:</strong> {{ farmer.total_orders }}</li>
+                                    <li class="mb-1"><strong>Total Spent:</strong> KSh {{ "{:,.2f}".format(farmer.total_spent) }}</li>
+                                    <li><strong>Avg Order:</strong> KSh {{ "{:,.2f}".format(farmer.avg_order_value) }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Spending Trend -->
+        <div class="card mb-4">
+            <div class="chart-container">
+                        <h3>📅 Monthly Spending Trend (Ksh)</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="monthlyTrendChart"></canvas>
+                        </div>
+                    </div>
+        </div>
+
+
+        <!-- Recent Orders Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="h5 mb-3">Recent Orders</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order #</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Delivery</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in order_history %}
+                            <tr>
+                                <td class="text-primary">{{ order.order_reference_number }}</td>
+                                <td>{{ order.order_date.strftime('%b %d, %Y') }}</td>
+                                <td>{{ order.item_count }} items</td>
+                                <td>KSh {{ "{:,.2f}".format(order.order_total) }}</td>
+                                <td>{{ order.order_drop_location }}</td>
+                                <td>
+                                    <span class="status-badge bg-primary bg-opacity-10">
+                                        {{ order.order_status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Getting the data from backend
+        const dailySpending = {{ daily_spending | tojson }};
+        const spendingByCategory = {{ spending_by_category | tojson }};
+        const monthlySpending = {{ monthly_spending | tojson }};
+
+        // Chart.js defaults
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.color = '#2c3e50';
+
+        // Formating the currency
+        function formatCurrency(value) {
+            return 'Ksh ' + value.toLocaleString();
+        }
+
+        // Daily spending line chart
+        function createDailyChart() {
+            const ctx = document.getElementById('dailySpendingChart').getContext('2d');
+
+            if (!dailySpending || dailySpending.length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="no-data">No spending data available for the selected period</div>';
+                return;
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dailySpending.map(item => item.date),
+                    datasets: [{
+                        label: 'Daily Spending',
+                        data: dailySpending.map(item => item.spending),
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#4CAF50',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#4CAF50',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const dataPoint = dailySpending[context.dataIndex];
+                                    return [
+                                        `Spending: ${formatCurrency(dataPoint.spending)}`,
+                                        `Orders: ${dataPoint.orders}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Category spending chart
+        function createCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+
+            if (!spendingByCategory || spendingByCategory.length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="no-data">No category data available</div>';
+                return;
+            }
+
+            const sortedCategories = [...spendingByCategory].sort((a, b) => b.percentage - a.percentage);
+
+            // const totalSpent = sortedCategories.reduce((sum, c) => sum + c.total_spent, 0);
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: sortedCategories.map(item => item.category),
+                    datasets: [{
+                        data: sortedCategories.map(item => item.percentage),
+                        backgroundColor: [
+                            '#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0',
+                            '#607D8B', '#00BCD4', '#8BC34A', '#E91E63', '#3F51B5'
+                        ],
+                        borderWidth: 1,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, padding: 20 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataPoint = sortedCategories[context.dataIndex];
+                                    return [
+                                        `Spent: ${formatCurrency(dataPoint.total_spent)}`,
+                                        `Percentage: ${dataPoint.percentage}%`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        // Monthly Spending Chart
+        function createMonthlyChart() {
+            const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
+
+            if (!monthlySpending || monthlySpending.length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="no-data">No monthly spending data available</div>';
+                return;
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthlySpending.map(item => item.month),
+                    datasets: [{
+                        label: 'Monthly Spending',
+                        data: monthlySpending.map(item => item.total_spent),
+                        backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                        borderColor: '#4CAF50',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataPoint = monthlySpending[context.dataIndex];
+                                    return [
+                                        `Spending: ${formatCurrency(dataPoint.total_spent)}`,
+                                        `Orders: ${dataPoint.total_orders}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: value => formatCurrency(value) },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        
+
+
+        // Initialize the charts when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createDailyChart();
+            createCategoryChart();
+            createMonthlyChart();
+        });
+
+        // Function to convert charts to images before PDF download
+        function prepareChartsForPDF() {
+            return new Promise((resolve) => {
+                // Get all canvas elements
+                const charts = [
+                    document.getElementById('dailySpendingChart'),
+                    document.getElementById('categoryChart'),
+                    document.getElementById('monthlyTrendChart')
+                ];
+                
+                let processed = 0;
+                
+                charts.forEach((chart, index) => {
+                    // Create a hidden div for each chart image
+                    const imgDiv = document.createElement('div');
+                    imgDiv.id = `chart-image-${index}`;
+                    imgDiv.style.display = 'none';
+                    imgDiv.innerHTML = `<img src="${chart.toDataURL('image/png')}" alt="Chart ${index}">`;
+                    document.body.appendChild(imgDiv);
+                    
+                    processed++;
+                    if (processed === charts.length) {
+                        resolve();
+                    }
+                });
+            });
+        }
+
+        // Modify download button click handler
+        document.querySelector('a[href*="/download"]').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            // Show loading indicator
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Generating PDF...';
+            this.disabled = true;
+            
+            try {
+                // Convert charts to images
+                await prepareChartsForPDF();
+                
+                // Proceed with download
+                window.location.href = this.href;
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+            } finally {
+                // Restore button text
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }
+        });
+    </script>
+</body>
+{% endblock %}

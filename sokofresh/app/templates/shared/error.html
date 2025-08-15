@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SokoFresh — Error {{ code }} - {{ title }}</title>
+  <style>
+    :root{
+      --bg:#faf8f5;
+      --muted:#6b6b6b;
+      --accent:#c62828;
+      --card:#fff;
+      --glass: rgba(255,255,255,0.6);
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color:#222;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:2rem;
+    }
+
+    .wrap{
+      max-width:980px;
+      width:100%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.95));
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border-radius:14px;
+      padding:1.25rem;
+      display:flex;
+      gap:1rem;
+      align-items:center;
+    }
+
+    .img-col{
+      flex: 0 0 360px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0.5rem;
+    }
+    .img-col img{
+      max-width:100%;
+      height:auto;
+      border-radius:10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      display:block;
+    }
+
+    .text-col{
+      flex:1;
+      padding: 0.5rem 1rem;
+    }
+
+    h1{
+      margin:0 0 .25rem 0;
+      font-size:2.1rem;
+      letter-spacing:-1px;
+    }
+    .code{
+      display:inline-block;
+      background:var(--glass);
+      padding:.2rem .5rem;
+      border-radius:6px;
+      color:var(--muted);
+      font-weight:600;
+      margin-bottom:.75rem;
+    }
+
+    p.lead{
+      margin:10px 0 1.1rem 0;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .actions{
+      display:flex;
+      gap:.6rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .btn{
+      display:inline-block;
+      text-decoration:none;
+      padding:.6rem .9rem;
+      border-radius:10px;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+    }
+    .btn-primary{
+      background:var(--accent);
+      color:white;
+      box-shadow: 0 6px 18px rgba(198,40,40,0.18);
+    }
+    .btn-ghost{
+      background:transparent;
+      border:1px solid #e4e4e4;
+      color:var(--muted);
+    }
+
+    .fun{
+      margin-top:1rem;
+      color:var(--accent);
+      font-weight:800;
+      font-size:1.05rem;
+    }
+
+    @media (max-width:880px){
+      .wrap{flex-direction:column; padding:.8rem}
+      .img-col{flex: none; width:100%}
+      .text-col{width:100%}
+    }
+  </style>
+</head>
+<body>
+    <div class="wrap" role="main" aria-labelledby="title">
+        <div class="img-col" aria-hidden="true">
+            <img src="{{ url_for('static', filename='images/error_' ~ code ~ '.png') if code in [400,403,404,500] else url_for('static', filename='images/error_generic.png') }}" 
+     alt="error artwork" />
+
+        </div>
+
+        <div class="text-col">
+          <div class="code">Error {{ code }}</div>
+          <h1 id="title">{{ title }}</h1>
+          <p class="lead">
+            {{ message }}
+          </p>
+
+          <div class="actions">
+            <a href="{{ url_for('buyers.home') }}" class="btn btn-primary">Take me home</a>
+            <a href="#" onclick="history.back(); return false;" class="btn btn-ghost">Go back</a>
+          </div>
+
+          <p class="fun">{{ fun_quote }}</p>
+        </div>
+    </div>
+</body>
+</html>

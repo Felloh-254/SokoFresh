@@ -61,204 +61,141 @@
             </div>
         </div>
 
-        <div class="order-stats-row">
-            <div class="order-stat-card">
-                <div class="order-stat-number order-stat-new">8</div>
-                <div class="order-stat-label">New Orders</div>
-            </div>
-            <div class="order-stat-card">
-                <div class="order-stat-number order-stat-processing">12</div>
-                <div class="order-stat-label">Processing</div>
-            </div>
-            <div class="order-stat-card">
-                <div class="order-stat-number order-stat-ready">5</div>
-                <div class="order-stat-label">Ready for Pickup</div>
-            </div>
-            <div class="order-stat-card">
-                <div class="order-stat-number order-stat-completed">34</div>
-                <div class="order-stat-label">Completed Today</div>
-            </div>
+    <div class="order-stats-row">
+        {% set status_map = {
+            'new': 'new',
+            'pending': 'pending',
+            'processing': 'processing',
+            'ready': 'ready',
+            'completed': 'completed',
+            'cancelled': 'cancelled'
+        } %}
+
+        {% set status_counts = {
+            'new': 0,
+            'pending': 0,
+            'processing': 0,
+            'ready': 0,
+            'completed': 0,
+            'cancelled': 0,
+            'other': 0
+        } %}
+
+        {% for order in orders %}
+            {% set raw_status = order.order_item_status.strip().lower() %}
+            {% set status = status_map[raw_status] if raw_status in status_map else 'other' %}
+            {% set _ = status_counts.__setitem__(mapped_status, status_counts.get(mapped_status, 0) + 1) %}
+        {% endfor %}
+
+        <div class="order-stat-card">
+            <div class="order-stat-number order-stat-new">{{ status_counts['pending'] }}</div>
+            <div class="order-stat-label">New Orders</div>
         </div>
 
-        <!-- Smaple orders -->
-
-        <div class="orders-list" id="ordersList">
-            <!-- New Order -->
-            <div class="order-card" data-status="new">
-                <div class="order-header">
-                    <div class="order-info">
-                        <h3>Order #ORD-2025-001</h3>
-                        <div class="order-meta">
-                            <span>📅 June 29, 2025 - 9:30 AM</span>
-                            <span>📍 Kiambu Town</span>
-                            <span>💳 M-Pesa Payment</span>
-                        </div>
-                        <div class="customer-info">
-                            <div class="customer-avatar">MK</div>
-                            <span>Mary Kamau - +254712345678</span>
-                        </div>
-                    </div>
-                    <span class="status-badge status-new">New Order</span>
-                </div>
-                
-                <div class="order-items">
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🥬 Fresh Sukuma Wiki</div>
-                            <div class="item-details">3 bunches × KSh 25</div>
-                        </div>
-                        <div>KSh 75</div>
-                    </div>
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🥕 Organic Carrots</div>
-                            <div class="item-details">2 kg × KSh 80</div>
-                        </div>
-                        <div>KSh 160</div>
-                    </div>
-                </div>
-
-                <div class="order-total">
-                    <div class="total-amount">Total: KSh 235</div>
-                    <div class="order-actions">
-                        <button class="order-btn btn-accept" onclick="updateOrderStatus(this, 'processing')">Accept Order</button>
-                        <button class="order-btn btn-cancel" onclick="updateOrderStatus(this, 'cancelled')">Decline</button>
-                        <button class="order-btn btn-view">View Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Processing Order -->
-            <div class="order-card" data-status="processing">
-                <div class="order-header">
-                    <div class="order-info">
-                        <h3>Order #ORD-2025-002</h3>
-                        <div class="order-meta">
-                            <span>📅 June 29, 2025 - 8:15 AM</span>
-                            <span>📍 Limuru</span>
-                            <span>💳 Cash on Delivery</span>
-                        </div>
-                        <div class="customer-info">
-                            <div class="customer-avatar">JM</div>
-                            <span>John Mwangi - +254723456789</span>
-                        </div>
-                    </div>
-                    <span class="status-badge status-processing">Processing</span>
-                </div>
-                
-                <div class="order-items">
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🥑 Hass Avocados</div>
-                            <div class="item-details">10 pieces × KSh 20</div>
-                        </div>
-                        <div>KSh 200</div>
-                    </div>
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🍅 Cherry Tomatoes</div>
-                            <div class="item-details">1.5 kg × KSh 120</div>
-                        </div>
-                        <div>KSh 180</div>
-                    </div>
-                </div>
-
-                <div class="order-total">
-                    <div class="total-amount">Total: KSh 380</div>
-                    <div class="order-actions">
-                        <button class="order-btn btn-ready" onclick="updateOrderStatus(this, 'ready')">Mark Ready</button>
-                        <button class="order-btn btn-cancel" onclick="updateOrderStatus(this, 'cancelled')">Cancel</button>
-                        <button class="order-btn btn-view">View Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ready Order -->
-            <div class="order-card" data-status="ready">
-                <div class="order-header">
-                    <div class="order-info">
-                        <h3>Order #ORD-2025-003</h3>
-                        <div class="order-meta">
-                            <span>📅 June 29, 2025 - 7:45 AM</span>
-                            <span>📍 Kiambu Road</span>
-                            <span>💳 M-Pesa Payment</span>
-                        </div>
-                        <div class="customer-info">
-                            <div class="customer-avatar">SW</div>
-                            <span>Sarah Wanjiku - +254734567890</span>
-                        </div>
-                    </div>
-                    <span class="status-badge status-ready">Ready for Pickup</span>
-                </div>
-                
-                <div class="order-items">
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🥒 Garden Cucumbers</div>
-                            <div class="item-details">3 kg × KSh 50</div>
-                        </div>
-                        <div>KSh 150</div>
-                    </div>
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🌿 Fresh Coriander</div>
-                            <div class="item-details">2 bunches × KSh 15</div>
-                        </div>
-                        <div>KSh 30</div>
-                    </div>
-                </div>
-
-                <div class="order-total">
-                    <div class="total-amount">Total: KSh 180</div>
-                    <div class="order-actions">
-                        <button class="order-btn btn-complete" onclick="updateOrderStatus(this, 'completed')">Mark Complete</button>
-                        <button class="order-btn btn-view">View Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Completed Order -->
-            <div class="order-card" data-status="completed">
-                <div class="order-header">
-                    <div class="order-info">
-                        <h3>Order #ORD-2025-004</h3>
-                        <div class="order-meta">
-                            <span>📅 June 29, 2025 - 6:30 AM</span>
-                            <span>📍 Banana Hill</span>
-                            <span>💳 M-Pesa Payment</span>
-                        </div>
-                        <div class="customer-info">
-                            <div class="customer-avatar">PK</div>
-                            <span>Peter Kiprotich - +254745678901</span>
-                        </div>
-                    </div>
-                    <span class="status-badge status-completed">Completed</span>
-                </div>
-                
-                <div class="order-items">
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🥬 Fresh Sukuma Wiki</div>
-                            <div class="item-details">5 bunches × KSh 25</div>
-                        </div>
-                        <div>KSh 125</div>
-                    </div>
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">🥕 Organic Carrots</div>
-                            <div class="item-details">1 kg × KSh 80</div>
-                        </div>
-                        <div>KSh 80</div>
-                    </div>
-                </div>
-
-                <div class="order-total">
-                    <div class="total-amount">Total: KSh 205</div>
-                    <div class="order-actions">
-                        <button class="order-btn btn-view">View Receipt</button>
-                    </div>
-                </div>
-            </div>
+        <div class="order-stat-card">
+            <div class="order-stat-number order-stat-pending">{{ status_counts['pending'] }}</div>
+            <div class="order-stat-label">Pending Orders</div>
         </div>
+
+        <div class="order-stat-card">
+            <div class="order-stat-number order-stat-processing">{{ status_counts['processing'] }}</div>
+            <div class="order-stat-label">Processing</div>
+        </div>
+
+        <div class="order-stat-card">
+            <div class="order-stat-number order-stat-ready">{{ status_counts['ready'] }}</div>
+            <div class="order-stat-label">Ready for Pickup</div>
+        </div>
+
+        <div class="order-stat-card">
+            <div class="order-stat-number order-stat-completed">{{ status_counts['completed'] }}</div>
+            <div class="order-stat-label">Completed</div>
+        </div>
+    </div>
+
+    <div class="orders-list" id="ordersList">
+        {% if grouped_orders %}
+            {% for ref_group, group in grouped_orders.items() %}
+                <div class="order-group">
+                    <h2 class="order-group-title">Order Ref #{{ ref_group }}</h2>
+                    
+                    {% set all_completed = ref_group.list | map(attribute='order_item_status') 
+                                                         | map('lower') 
+                                                         | select('equalto', 'completed') 
+                                                         | list 
+                                                         | length == ref_group.list | length %}
+
+                    {% for order in group %}
+                        <div class="order-card" data-order-id="{{ order.order_id }}" data-status="{{ order.order_item_status }}" data-order-item-id="{{ order.order_item_id }}">
+                            <div class="order-header">
+                                <div class="order-info">
+                                    <h3>{{ order.product_name }}</h3>
+                                    <div class="order-meta">
+                                        <span><i class="fa fa-calendar"></i> {{ order.order_date.strftime('%b %d, %Y - %I:%M %p') }}</span>
+                                        <span>📍 {{ order.order_drop_location }}</span>
+                                        <span>💳 {{ order.order_payment_method }}</span>
+                                    </div>
+                                    <div class="customer-info">
+                                        <div class="customer-avatar">{{ order.user_full_name[0:1] }}</div>
+                                        <span>{{ order.user_full_name }} - {{ order.user_phone }}</span>
+                                    </div>
+                                </div>
+                                <span class="status-badge status-{{ order.order_item_status }}">{{ order.order_item_status | capitalize }}</span>
+                            </div>
+
+                            <div class="order-items">
+                                <div class="item-row">
+                                    <div>
+                                        <div class="item-name">{{ order.product_name }}</div>
+                                        <div class="item-details">
+                                            {{ order.total_quantity }} {{ order.product_unit }} × KSh {{ order.order_unit_price | round(2) }}
+                                        </div>
+                                    </div>
+                                    <div><strong>KSh {{ order.total_price | round(2) }}</strong></div>
+                                </div>
+                            </div>
+
+                            <div class="order-actions">
+                                {% set status = order.order_item_status.strip().lower() %}
+                                {% if status == 'pending' %}
+                                    <button class="order-btn btn-accept" data-status-target="processing" data-order-id="{{ order.order_id }}" data-order-item-id="{{ order.order_item_id }}">Accept</button>
+                                    <button class="order-btn btn-cancel" data-status-target="cancelled" data-order-id="{{ order.order_id }}" data-order-item-id="{{ order.order_item_id }}">Decline</button>
+                                {% elif status == 'processing' %}
+                                    <button class="order-btn btn-ready" data-status-target="ready" data-order-id="{{ order.order_id }}" data-order-item-id="{{ order.order_item_id }}">Mark Ready</button>
+                                    <button class="order-btn btn-cancel" data-status-target="cancelled" data-order-id="{{ order.order_id }}" data-order-item-id="{{ order.order_item_id }}">Cancel</button>
+                                {% elif status == 'ready' %}
+                                    <button class="order-btn btn-complete" data-status-target="completed" data-order-id="{{ order.order_id }}" data-order-item-id="{{ order.order_item_id }}">Mark Complete</button>
+                                {% elif status == 'completed' %}
+                                    <a href="{{ url_for('farmers.view_receipt', order_id=order.order_id, order_item_id=order.order_item_id) }}" target="_blank" class="order-btn btn-view">
+                                        View Receipt
+                                    </a>
+                                    <a href="{{ url_for('farmers.download_receipt_pdf', order_id=order.order_id, order_item_id=order.order_item_id) }}" class="order-btn btn-view">
+                                        Download PDF
+                                    </a>
+                                {% else %}
+                                    <p style="color: orange;">[No actions for status: {{ status }}]</p>
+                                {% endif %}
+                            </div>
+
+                            <p style="font-size: 12px; color: grey;">
+                                Order Ref: {{ order.order_reference_number }} | Product ID: {{ order.product_id }}
+                            </p>
+                        </div>
+                    {% endfor %}
+
+                    {% if all_completed %}
+                        <div class="bundle-actions">
+                            <a href="{{ url_for('farmers.view_receipt', order_id=group[0].order_id) }}" class="order-btn btn-view" target="_blank">View Full Receipt for Ref {{ ref_group.grouper }}</a>
+
+                            <a href="{{ url_for('farmers.download_receipt_pdf', order_id=group[0].order_id) }}" class="order-btn btn-view" target="_blank">Download Full Receipt for Ref {{ ref_group.grouper }}</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="order-card">
+                <h3>No orders here yet</h3>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
