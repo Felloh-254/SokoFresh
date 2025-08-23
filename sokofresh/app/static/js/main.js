@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('product_image').removeAttribute('required');
                 document.getElementById('existing_image_url').value = button.dataset.img;
 
-                // If you want to preview the image
+                // Previewing the image
                 const imgPreview = document.getElementById('previewImage');
                 if (imgPreview && button.dataset.img) {
                     imgPreview.src = button.dataset.img;
@@ -618,25 +618,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 $('#edit_unit').val(button.dataset.unit).trigger('change');
             } else if (e.target.classList.contains('listing-btn-delete')) {
+                let productId = e.target.dataset.id;
                 if (confirm('Are you sure you want to delete this product?')) {
-                    e.target.closest('.listing-card').remove();
+                    fetch('/farmer/product/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product_id: productId })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            e.target.closest('.listing-card').remove();
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                        }
+                    });
                 }
             } else if (e.target.classList.contains('listing-btn-toggle')) {
-                const card = e.target.closest('.listing-card');
-                const badge = card.querySelector('.listing-status-badge');
-                const currentStatus = card.getAttribute('data-status');
-                
-                if (currentStatus === 'active') {
-                    card.setAttribute('data-status', 'pending');
-                    badge.textContent = 'Paused';
-                    badge.className = 'listing-status-badge listing-status-pending';
-                    e.target.textContent = 'Activate';
-                } else {
-                    card.setAttribute('data-status', 'active');
-                    badge.textContent = 'Active';
-                    badge.className = 'listing-status-badge listing-status-active';
-                    e.target.textContent = 'Pause';
-                }
+                let productId = e.target.dataset.id;
+
+                fetch('/farmer/product/toggle-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const card = e.target.closest('.listing-card');
+                        const badge = card.querySelector('.listing-status-badge');
+
+                        if (data.new_status === 'paused') {
+                            // Fetch pending orders count
+                            fetch(`/farmer/product/pending-count/${productId}`)
+                            .then(res => res.json())
+                            .then(countData => {
+                                badge.textContent = `Paused (${countData.pending_count} pending orders)`;
+                            });
+
+                            badge.className = 'listing-status-badge listing-status-pending';
+                            e.target.textContent = 'Activate';
+                        } else {
+                            badge.textContent = 'Active';
+                            badge.className = 'listing-status-badge listing-status-active';
+                            e.target.textContent = 'Pause';
+                        }
+                    }
+                });
             }
         });
 

@@ -59,7 +59,8 @@
 </head>
 <body>
     <div class="container">
-        <img src="{{ url_for('static', filename='/images/logo1.png') }}" alt="SokoFresh Logo" class="logo" />
+        <img src="https://raw.githubusercontent.com/Felloh-254/SokoFresh/main/sokofresh/app/static/images/logo1.png" 
+     alt="SokoFresh Logo" style="max-width:150px; margin:20px 0;" />
         <h1>Welcome to <span style="font-family: cursive;">SokoFresh</span></h1>
         <p>Hello {{ user_name }},</p>
         <p>We're absolutely thrilled to welcome you to <strong>SokoFresh</strong> – where fresh meets local. 🌱</p>
@@ -67,7 +68,10 @@
         <p>Whether you're a buyer or a farmer, we're here to support your journey with innovative tools and a vibrant ecosystem. Go ahead, explore the marketplace, and let's grow together!</p>
         <p>If you ever need help, our team is just a click away.</p>
         <a href="#" class="button">Go to Your Dashboard</a>
-        <p class="footer">Thank you for joining <strong>SokoFresh</strong>!<br/>Together, let's make food systems better.</p>
+        <div class="footer">
+            <p>Thank you for joining <strong>SokoFresh</strong>!<br/>Together, let's make food systems better.</p>
+            <p>&copy; {{ current_year }} SokoFresh. All rights reserved.</p>
+        </div>
     </div>
 </body>
 </html>

@@ -108,8 +108,6 @@ def get_stats_overview(cur, start_date, end_date, prev_start, prev_end, user_id)
 
     current_stats = cur.fetchone()
 
-    print(f"Stats: {current_stats}")
-
     # Calculate previous month stats
     cur.execute("""
         SELECT
@@ -159,8 +157,6 @@ def update_farm():
     mpesa_number = request.form.get('update_mpesa_number')
     transport = bool(request.form.get('update_transport'))
     storage = bool(request.form.get('update_storage'))
-
-    print("DEBUG:", farm_size, produce_category, produce_type, farming_methods, availability_schedule, mpesa_number, transport, storage)
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -307,6 +303,8 @@ def my_listings():
 def update_product_details():
     form_data = request.form.to_dict()
 
+    print(f"Form data: {form_data}")
+
     product_id = form_data.get('edit_product_id')
     name = form_data.get('edit_name')
     unit = form_data.get('edit_unit')
@@ -345,7 +343,7 @@ def update_product_details():
                     product_description = %s,
                     product_image_url = COALESCE(%s, product_image_url),
                     product_status = CASE 
-                        WHEN %s > 0 THEN 'active'
+                        WHEN product_quantity > 0 THEN 'active'
                         ELSE product_status
                     END,
                     product_updated_at = CURRENT_TIMESTAMP
@@ -372,6 +370,101 @@ def update_product_details():
 
 
 
+@farmers.route('/farmer/product/delete', methods=['POST'])
+def delete_product():
+    product_id = request.json.get('product_id')
+
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Check for pending orders
+    cur.execute("""
+        SELECT COUNT(*) AS pending_count
+        FROM order_items oi
+        JOIN orders o ON oi.order_item_order_id = o.order_id
+        WHERE oi.order_product_id = %s AND oi.order_item_status = 'pending'
+    """, (product_id,))
+    pending_count = cur.fetchone()['pending_count']
+
+    if pending_count > 0:
+        return jsonify({
+            "success": False, 
+            "message": f"This product has {pending_count} pending orders. Please pause and complete them before deleting.",
+            "pending_count": pending_count
+        }), 400
+
+    # Safe to delete
+    cur.execute("DELETE FROM products WHERE product_id = %s", (product_id,))
+    conn.commit()
+
+    cur.close()
+    release_db_connection(conn)
+
+    return jsonify({"success": True, "message": "Product deleted successfully"})
+
+
+@farmers.route('/farmer/product/toggle-status', methods=['POST'])
+def toggle_product_status():
+    try:
+        product_id = request.json.get('product_id')
+
+        if not product_id:
+            return jsonify({"success": False, "message": "No product ID provided"}), 400
+
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        cur.execute("SELECT product_status FROM products WHERE product_id = %s", (product_id,))
+        product = cur.fetchone()
+
+        if not product:
+            return jsonify({"success": False, "message": "Product not found"}), 404
+
+        new_status = 'paused' if product['product_status'] == 'active' else 'active'
+
+        cur.execute("""
+            UPDATE products 
+            SET product_status = %s, product_updated_at = NOW()
+            WHERE product_id = %s
+        """, (new_status, product_id))
+        conn.commit()
+
+        return jsonify({"success": True, "new_status": new_status})
+
+    except Exception as e:
+        # Print full traceback in console (helps debugging)
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "message": f"Internal Server Error: {str(e)}"}), 500
+
+    finally:
+        try:
+            if cur: 
+                cur.close()
+            if conn:
+                release_db_connection(conn)
+        except Exception:
+            pass
+
+
+@farmers.route('/farmer/product/pending-count/<int:product_id>', methods=['GET'])
+def get_pending_count(product_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT COUNT(*) 
+        FROM order_items oi
+        JOIN orders o ON oi.order_item_order_id = o.order_id
+        WHERE oi.order_product_id = %s AND oi.order_item_status = 'pending'
+    """, (product_id,))
+    count = cur.fetchone()[0]
+
+    cur.close()
+    release_db_connection(conn)
+
+    return jsonify({"pending_count": count})
+
 
 @farmers.route("/farmer/orders")
 @login_required
@@ -393,8 +486,6 @@ def orders():
 
 
 
-
-
 @farmers.route("/farmer/update-order-status", methods=["POST"])
 @login_required
 def update_order_status():
@@ -402,8 +493,6 @@ def update_order_status():
     order_id = data.get("order_id")
     order_item_id = data.get("order_item_id")
     new_status = data.get("new_status")
-
-    print(f"order id: {order_id}, order item id: {order_item_id}, status: {new_status}")
 
     if not order_id or not new_status:
         return jsonify({"success": False, "error": "Missing data"}), 400
@@ -454,8 +543,6 @@ def view_receipt(order_id, order_item_id):
         ''', (order_id, current_user.id))
 
     order_items = cur.fetchall()
-    print(f"Receipt details: {order_items}")
-
     if not order_items:
         cur.close()
         release_db_connection(conn)
@@ -904,7 +991,6 @@ def get_category_performance(cur, start_date, end_date, user_id):
 def get_monthly_comparison(cur, user_id, months_back=3):
     """Get monthly revenue comparison for the last N months"""
     try:
-        print(f"user: {user_id}")
         interval = f"{months_back} months"
         cur.execute(f"""
             SELECT
@@ -1006,7 +1092,7 @@ def export_csv():
         output = io.StringIO()
         writer = csv.writer(output)
 
-        # 1. Write Sales Summary Section
+        # Write sales summary section
         writer.writerow(["SALES SUMMARY"])
         writer.writerow(["Metric", "Value"])
         
@@ -1029,9 +1115,9 @@ def export_csv():
         writer.writerow(["Total Units Sold", sales_summary['total_units_sold']])
         writer.writerow(["Total Revenue", f"Ksh {sales_summary['total_revenue']:,.2f}"])
         writer.writerow(["Average Order Value", f"Ksh {sales_summary['avg_order_value']:,.2f}"])
-        writer.writerow([])  # Empty row for spacing
+        writer.writerow([])
 
-        # 2. Write Top Products Section
+        # Write top products section
         writer.writerow(["TOP PRODUCTS (BY REVENUE)"])
         writer.writerow(["Product Name", "Units Sold", "Revenue", "Order Count"])
         
@@ -1061,7 +1147,7 @@ def export_csv():
             ])
         writer.writerow([])
 
-        # 3. Write Sales Trend Section
+        # Write sales trend section
         writer.writerow(["MONTHLY SALES TREND (LAST 12 MONTHS)"])
         writer.writerow(["Month", "Order Count", "Monthly Revenue"])
         
@@ -1088,7 +1174,7 @@ def export_csv():
             ])
         writer.writerow([])
 
-        # 4. Write Customer Metrics Section
+        # Write customer metrics section
         writer.writerow(["CUSTOMER METRICS"])
         writer.writerow(["Metric", "Value"])
         
@@ -1117,7 +1203,7 @@ def export_csv():
         writer.writerow(["Repeat Customers", customer_metrics['repeat_customers']])
         writer.writerow([])
 
-        # 5. Write Order Status Breakdown
+        # Write order status breakdown
         writer.writerow(["ORDER STATUS BREAKDOWN"])
         writer.writerow(["Status", "Count", "Total Value"])
         

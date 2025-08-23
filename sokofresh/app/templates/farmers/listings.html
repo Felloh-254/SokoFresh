@@ -35,7 +35,7 @@
                     <div class="listing-card" data-status="active" data-category="vegetables">
                         <div class="listing-product-image">
                             <img src="{{ product.product_image_url }}" alt="{{ product.product_name }}">
-                            <span class="listing-status-badge listing-status-active">Active</span>
+                            <span class="listing-status-badge listing-status-active">{{ product.product_status }}</span>
                         </div>
                         <div class="listing-card-content">
                             <h3 class="listing-product-name">{{ product.product_name }}</h3>
@@ -61,8 +61,16 @@
                                     Edit
                                 </button>
 
-                                <button class="listing-btn listing-btn-toggle">Pause</button>
-                                <button class="listing-btn listing-btn-delete">Delete</button>
+                                <button class="listing-btn listing-btn-toggle"
+                                    data-id="{{ product.product_id }}">
+                                    Pause
+                                </button>
+
+                                <button class="listing-btn listing-btn-delete"
+                                    data-id="{{ product.product_id }}"
+                                    data-name="{{ product.product_name }}">
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     </div>

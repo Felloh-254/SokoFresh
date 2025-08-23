@@ -3,6 +3,9 @@ from flask import Flask, render_template, url_for, request, jsonify, Blueprint, 
 from flask_login import login_user, logout_user, login_required, current_user
 from app.db.db import get_db_connection, release_db_connection
 from werkzeug.utils import secure_filename
+from app import mail
+from flask_mail import Message
+from datetime import datetime
 
 helpers = Blueprint('helpers', __name__, url_prefix='/')
 
@@ -54,9 +57,46 @@ def update_profile():
 		return jsonify({"error": "Failed to update profile"}), 500
 
 	finally:
-		if cur: cur.close()
-		if conn: release_db_connection(conn)
+		cur.close()
+		release_db_connection(conn)
 
+
+@helpers.route('/settings/delete-account', methods=['POST'])
+def delete_account():
+    data = request.get_json()
+    deletion_reason = data.get('deletion_reason', 'No reason provided');
+    user_id = current_user.id
+    user_email = current_user.email
+    user_name = current_user.name
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        send_deletion_message(user_email, user_name)
+
+        cur.execute('DELETE FROM users WHERE user_id = %s', (user_id, ))
+        conn.commit()
+
+        return jsonify({
+            "redirect_url": url_for("auth.login"), 
+            "message": "Your account has been deleted"
+        }), 200
+    except Exception as e:
+        print(f"Error deleting the account: {e}")
+    finally:
+        cur.close()
+        release_db_connection()
+
+
+def send_deletion_message(user_email, user_name):
+    subject = "Your SokoFresh account has been deleted"
+    html_content = render_template(
+            'shared/deletion_email.html',
+            user_name=user_name,
+            current_year=datetime.strftime(datetime.now(), '%Y'))
+
+    send_email(user_email, subject, html_content)
 
 
 # Getting the product type based on their category
@@ -243,3 +283,8 @@ def support():
 @helpers.route('/about-us')
 def about_us():
 	return render_template('/shared/about.html', user=current_user)
+
+
+def send_email(recipient, subject, html_content):
+    msg = Message(subject=subject, sender=current_app.config['MAIL_USERNAME'], recipients=[recipient], html=html_content)
+    mail.send(msg)

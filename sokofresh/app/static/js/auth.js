@@ -54,11 +54,35 @@ $(document).ready(function () {
         });
     });
 
+
+
+    // Listener fo account deletion trigger
+    $('#delete-account-btn').on('click', function() {
+        // Confirm whether the user wants to delete the account
+        const deletion_reason = document.getElementById('deletion-reason').value;
+        if (confirm("Are you sure you want to proceed deleting your account??")) {
+            // Proceed with deletion
+            $.ajax({
+                url: "/settings/delete-account",
+                method: "POST",
+                contentType: "application/json",
+                data:{"deletion_reason": deletion_reason},
+                success: function(response) {
+                    // Redirect to logout after successful account deletion
+                    showFlashMessage(response.message);
+                    window.location.href = response.redirect_url;
+                },
+                error: function (xhr, status, error) {
+                    const res = JSON.parse(xhr.responseText);
+                    showFlashMessage(res.message, 'error');
+                }
+            });
+        }
+    });
+
     
 
     // Listener for updating produce types based on their category
-
-    // keep this listener for change events in the select2
     $('#produce_category, #update_produce_category').on('change', function () {
         if (window.initializing) return;
 

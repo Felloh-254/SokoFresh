@@ -3,16 +3,15 @@ import random
 import string
 import os
 import pytz
-from flask_mail import Message
 from flask import Blueprint, render_template, url_for, request, redirect, session, jsonify, flash, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from PIL import Image
 from app.db.db import get_db_connection, release_db_connection
+from app.routes.helpers import send_email
 from flask_login import login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
 from app.__init__ import User
-from app import mail
 
 
 # Get the time as per the timezone
@@ -365,20 +364,22 @@ def generate_verification_code(length=6):
 
 def send_verification_code_email(email, verification_code):
 	subject = "One Click Away – Verify Your SokoFresh Account"
-	html_content = render_template('shared/verification_code_email.html', verification_code=verification_code)
+	html_content = render_template(
+			'shared/verification_code_email.html',
+			verification_code=verification_code,
+			current_year=datetime.strftime(datetime.now(), '%Y'))
+
 	send_email(email, subject, html_content)
 
 
 def send_welcome_email(user_email, user_name):
 	subject = "Fresh food, fresh start – Welcome to SokoFresh!"
-	html_content = render_template('shared/welcome_email.html', user_name=user_name)
+	html_content = render_template(
+			'shared/welcome_email.html',
+			user_name=user_name,
+			current_year=datetime.strftime(datetime.now(), '%Y'))
+	
 	send_email(user_email, subject, html_content)
-
-
-def send_email(recipient, subject, html_content):
-	msg = Message(subject=subject, sender=current_app.config['MAIL_USERNAME'], recipients=[recipient], html=html_content)
-	mail.send(msg)
-
 
 
 

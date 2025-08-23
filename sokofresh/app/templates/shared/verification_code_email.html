@@ -54,8 +54,8 @@
     <div class="container" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);">
         
         <!-- Logo and Brand -->
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="{{ url_for('static', filename='/images/logo1.png') }}" alt="SokoFresh Logo" style="max-width: 120px; margin-bottom: 10px;">
+        <img src="https://raw.githubusercontent.com/Felloh-254/SokoFresh/main/sokofresh/app/static/images/logo1.png" 
+     alt="SokoFresh Logo" style="max-width:150px; margin:20px 0;" />
             <h1 style="font-family: 'Cursive', sans-serif; color: #4CAF50; font-size: 28px;">SokoFresh</h1>
         </div>
 
@@ -82,7 +82,7 @@
 
         <!-- Footer -->
         <hr style="margin: 30px 0; border: none; border-top: 1px solid #dddddd;">
-        <p style="color: #aaaaaa; font-size: 13px; text-align: center;">&copy; 2025 SokoFresh. All rights reserved.</p>
+        <p style="color: #aaaaaa; font-size: 13px; text-align: center;">&copy; {{ current_year }} SokoFresh. All rights reserved.</p>
     </div>
 </body>
 </html>
