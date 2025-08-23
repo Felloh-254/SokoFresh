@@ -288,3 +288,31 @@ def about_us():
 def send_email(recipient, subject, html_content):
     msg = Message(subject=subject, sender=current_app.config['MAIL_USERNAME'], recipients=[recipient], html=html_content)
     mail.send(msg)
+
+
+@helpers.route('/support/contact', methods=['POST'])
+def contact_support():
+    data = request.get_json()
+    print(data)
+    subject = f"Support Request: {data.get('subject')}"
+    user_name = data.get('name')
+    user_email = data.get('email')
+    phone = data.get('phone')
+    message = data.get('message')
+
+    # Build email HTML using Jinja template
+    html_content = render_template(
+        'shared/support_email.html',
+        user_name=user_name,
+        user_email=user_email,
+        phone=phone,
+        message=message,
+        current_year=datetime.strftime(datetime.now(), '%Y')
+    )
+
+    try:
+        send_email("felixogweny@gmail.com", subject, html_content)
+        return jsonify({"success": True})
+    except Exception as e:
+        print("Email error:", e)
+        return jsonify({"success": False, "error": str(e)})

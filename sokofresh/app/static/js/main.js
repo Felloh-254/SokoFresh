@@ -654,15 +654,23 @@ document.addEventListener('DOMContentLoaded', () => {
                             fetch(`/farmer/product/pending-count/${productId}`)
                             .then(res => res.json())
                             .then(countData => {
-                                badge.textContent = `Paused (${countData.pending_count} pending orders)`;
+                                badge.textContent = countData.pending_count > 0 
+                                    ? `Paused (${countData.pending_count} pending orders)` 
+                                    : 'Paused';
                             });
 
                             badge.className = 'listing-status-badge listing-status-pending';
                             e.target.textContent = 'Activate';
-                        } else {
+                        } 
+                        else if (data.new_status === 'active') {
                             badge.textContent = 'Active';
                             badge.className = 'listing-status-badge listing-status-active';
                             e.target.textContent = 'Pause';
+                        } 
+                        else if (data.new_status === 'out-of-stock') {
+                            badge.textContent = 'Out of Stock';
+                            badge.className = 'listing-status-badge listing-status-out-of-stock';
+                            e.target.textContent = 'Restock'; // optional
                         }
                     }
                 });
