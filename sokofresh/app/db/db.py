@@ -7,21 +7,22 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# PostgreSQL Configuration
-POSTGRES_CONFIG = {
-    "dbname": os.getenv("POSTGRES_DB"),
-    "user": os.getenv("POSTGRES_USER"),
-    "password": os.getenv("POSTGRES_PASSWORD"),
-    "host": os.getenv("POSTGRES_HOST"),
-    "port": os.getenv("POSTGRES_PORT"),
-}
+# Initializing the postgre connection pool
+DATABASE_URL = (
+    f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}"
+    f"@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+)
 
-# Initialize PostgreSQL Connection Pool
 try:
-    postgres_pool = pool.SimpleConnectionPool(1, 10, **POSTGRES_CONFIG)
-    print("PostgreSQL connection pool created successfully!")
+    postgres_pool = pool.SimpleConnectionPool(
+        1,
+        10,
+        dsn=DATABASE_URL,
+        sslmode="require"
+    )
+    print("PostgreSQL connection pool created")
 except Exception as e:
-    print(f"Error creating PostgreSQL connection pool: {e}")
+    print("Error creating PostgreSQL connection pool:", e)
     postgres_pool = None
 
 # Function to get a PostgreSQL connection
